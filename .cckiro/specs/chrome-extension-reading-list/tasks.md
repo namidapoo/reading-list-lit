@@ -25,14 +25,14 @@
 
 ### 1.1 プロジェクト構造とManifest設定
 
-- [ ] Chrome拡張用のVite設定を作成する
-- [ ] `public/manifest.json`を作成する（Manifest V3準拠）
-- [ ] アイコンの設定を追加する（16.png, 32.png, 48.png, 128.png）
-- [ ] 必要な権限（tabs, storage, contextMenus）を設定する
-- [ ] Content Security Policyを設定する
-- [ ] popup.htmlの基本構造を作成する
-- [ ] background.htmlの基本構造を作成する
-- [ ] Chrome拡張として正常にロードできることを確認する
+- [x] Chrome拡張用のVite設定を作成する
+- [x] `public/manifest.json`を作成する（Manifest V3準拠）
+- [x] アイコンの設定を追加する（16.png, 32.png, 48.png, 128.png）
+- [x] 必要な権限（tabs, storage, contextMenus）を設定する
+- [x] Content Security Policyを設定する
+- [x] popup.htmlの基本構造を作成する
+- [x] background.htmlの基本構造を作成する
+- [x] Chrome拡張として正常にロードできることを確認する
 
 ### 1.2 TypeScript型定義
 
