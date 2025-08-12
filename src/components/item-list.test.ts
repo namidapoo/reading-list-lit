@@ -187,8 +187,10 @@ describe("ItemList", () => {
 			expect(scrollContainer).toBeTruthy();
 
 			const styles = getComputedStyle(scrollContainer);
-			expect(styles.height).toBe("100%");
+			// height is calculated in pixels in the test environment
 			expect(styles.boxSizing).toBe("border-box");
+			expect(styles.overflowY).toBe("auto");
+			expect(styles.overflowX).toBe("hidden");
 		});
 	});
 

@@ -34,7 +34,10 @@ describe("ReadingItem", () => {
 
 		it("URLが表示される", () => {
 			const url = element.shadowRoot?.querySelector(".item-url");
-			expect(url?.textContent).toBe(mockItem.url);
+			// URL is formatted to show only hostname
+			expect(url?.textContent).toBe("example.com");
+			// Full URL is available in title attribute
+			expect(url?.getAttribute("title")).toBe(mockItem.url);
 		});
 
 		it("追加日時が相対形式で表示される", () => {
@@ -70,7 +73,8 @@ describe("ReadingItem", () => {
 		});
 
 		it("長いタイトルは省略される", async () => {
-			const longTitle = "a".repeat(200);
+			const longTitle =
+				"This is a very long title that should be truncated with ellipsis because it is too long to fit in the available space";
 			element.item = { ...mockItem, title: longTitle };
 			await element.updateComplete;
 
@@ -80,6 +84,7 @@ describe("ReadingItem", () => {
 			const styles = getComputedStyle(title);
 			expect(styles.overflow).toBe("hidden");
 			expect(styles.textOverflow).toBe("ellipsis");
+			expect(styles.whiteSpace).toBe("nowrap");
 		});
 	});
 

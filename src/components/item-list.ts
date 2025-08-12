@@ -14,20 +14,15 @@ export class ItemList extends LitElement {
 		}
 
 		.item-list-container {
-			display: flex;
-			flex-direction: column;
+			display: grid;
+			grid-template-columns: 1fr;
 			gap: 8px;
 			padding: 8px;
 			overflow-y: auto;
 			overflow-x: hidden;
 			height: 100%;
 			box-sizing: border-box;
-		}
-
-		/* Ensure proper width for items */
-		.item-list-container reading-item {
-			width: 100%;
-			box-sizing: border-box;
+			scrollbar-gutter: stable; /* Reserve space for scrollbar */
 		}
 
 		.empty-state,

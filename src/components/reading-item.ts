@@ -11,15 +11,17 @@ export class ReadingItemElement extends LitElement {
 		}
 
 		.item-container {
-			display: flex;
+			display: grid;
+			grid-template-columns: 24px 1fr 32px;
 			align-items: center;
+			gap: 12px;
 			padding: 12px;
 			background-color: var(--color-background, #ffffff);
 			border: 1px solid var(--color-border, #e5e7eb);
 			border-radius: var(--radius-md, 0.375rem);
 			transition: all var(--transition-fast, 150ms ease);
 			cursor: pointer;
-			position: relative;
+			box-sizing: border-box;
 		}
 
 		.item-container:hover {
@@ -31,8 +33,7 @@ export class ReadingItemElement extends LitElement {
 		.default-icon {
 			width: 24px;
 			height: 24px;
-			margin-right: 12px;
-			flex-shrink: 0;
+			grid-column: 1;
 		}
 
 		.item-favicon {
@@ -45,54 +46,45 @@ export class ReadingItemElement extends LitElement {
 		}
 
 		.item-content {
-			flex: 1;
-			min-width: 0;
-			display: flex;
-			flex-direction: column;
+			grid-column: 2;
+			min-width: 0; /* Important for text-overflow to work */
+			display: grid;
+			grid-template-rows: auto auto;
 			gap: 4px;
-			padding-right: 36px; /* Space for delete button */
 		}
 
 		.item-title {
 			font-size: var(--font-sm, 0.875rem);
 			font-weight: 500;
 			color: var(--color-text-primary, #111827);
-			line-height: 1.3;
-			word-wrap: break-word;
-			overflow-wrap: break-word;
-			display: -webkit-box;
-			-webkit-line-clamp: 2; /* Limit to 2 lines */
-			-webkit-box-orient: vertical;
 			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		.item-meta {
-			display: flex;
-			align-items: center;
+			display: grid;
+			grid-template-columns: 1fr auto;
 			gap: 8px;
 			font-size: var(--font-xs, 0.75rem);
 			color: var(--color-text-secondary, #6b7280);
 		}
 
 		.item-url {
-			flex: 1;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
-			max-width: 200px; /* Limit URL width */
 		}
 
 		.item-time {
-			flex-shrink: 0;
+			white-space: nowrap;
 		}
 
 		.delete-button {
-			position: absolute;
-			right: 12px;
-			top: 50%;
-			transform: translateY(-50%);
+			grid-column: 3;
 			width: 32px;
 			height: 32px;
+			padding: 0;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -103,12 +95,10 @@ export class ReadingItemElement extends LitElement {
 			cursor: pointer;
 			transition: all var(--transition-fast, 150ms ease);
 			opacity: 0;
-			visibility: hidden;
 		}
 
 		.item-container:hover .delete-button {
 			opacity: 1;
-			visibility: visible;
 		}
 
 		.delete-button:hover {
