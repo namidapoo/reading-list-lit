@@ -110,20 +110,20 @@
 
 ### 3.3 ReadingItemコンポーネント（TDD）
 
-- [ ] `src/components/reading-item.test.ts`を作成する
-  - [ ] レンダリングテストを書く（R2.2）
-  - [ ] 通常クリックテストを書く（R4.1）
-  - [ ] Ctrl/Cmd+クリックテストを書く（R4.2）
-  - [ ] 削除ボタンクリックテストを書く（R4.3）
-  - [ ] favicon表示テストを書く（R2.4）
-- [ ] `src/components/reading-item.ts`を実装する
-  - [ ] 基本構造とプロパティ定義
-  - [ ] タイトル・URL・日時表示
-  - [ ] favicon表示（DuckDuckGo API）
-  - [ ] クリックイベントハンドラー
-  - [ ] 削除イベントハンドラー
-- [ ] アニメーション効果を実装する
-- [ ] 全テストが通ることを確認する
+- [x] `src/components/reading-item.test.ts`を作成する
+  - [x] レンダリングテストを書く（R2.2）
+  - [x] 通常クリックテストを書く（R4.1）
+  - [x] Ctrl/Cmd+クリックテストを書く（R4.2）
+  - [x] 削除ボタンクリックテストを書く（R4.3）
+  - [x] favicon表示テストを書く（R2.4）
+- [x] `src/components/reading-item.ts`を実装する
+  - [x] 基本構造とプロパティ定義
+  - [x] タイトル・URL・日時表示
+  - [x] favicon表示（DuckDuckGo API）
+  - [x] クリックイベントハンドラー
+  - [x] 削除イベントハンドラー
+- [x] アニメーション効果を実装する
+- [x] 全テストが通ることを確認する
 
 ### 3.4 ItemListコンポーネント（TDD）
 
