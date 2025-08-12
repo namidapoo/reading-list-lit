@@ -39,6 +39,7 @@ const mockChrome = {
 Object.assign(globalThis, { chrome: mockChrome });
 
 describe("Background Script", () => {
+	// biome-ignore lint/suspicious/noExplicitAny: モックの型定義のため
 	let storage: any;
 	let onInstalledCallback: () => void;
 	let onContextMenuClickedCallback: (
@@ -124,6 +125,7 @@ describe("Background Script", () => {
 			// モジュールインポート後にstorageを取得
 			const backgroundModule = await import("./background");
 			storage = backgroundModule.storage;
+			// biome-ignore lint/suspicious/noExplicitAny: モックの型定義のため
 			(storage.addItem as any).mockResolvedValue({
 				id: "new-item",
 				url: mockTab.url,
@@ -196,6 +198,7 @@ describe("Background Script", () => {
 		});
 
 		it("エラー時にバッジでエラーを表示する", async () => {
+			// biome-ignore lint/suspicious/noExplicitAny: モックの型定義のため
 			(storage.addItem as any).mockRejectedValue(new Error("Storage full"));
 
 			const info: chrome.contextMenus.OnClickData = {
@@ -232,6 +235,7 @@ describe("Background Script", () => {
 			// モジュールインポート後にstorageを取得
 			const backgroundModule = await import("./background");
 			storage = backgroundModule.storage;
+			// biome-ignore lint/suspicious/noExplicitAny: モックの型定義のため
 			(storage.addItem as any).mockResolvedValue({
 				id: "new-item",
 				url: linkUrl,

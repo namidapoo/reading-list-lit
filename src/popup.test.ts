@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "./components/search-box";
 import "./components/item-list";
+import type { ItemList } from "./components/item-list";
 import "./popup-component";
 import type { ReadingListPopup } from "./popup-component";
 import type { ReadingItem } from "./types";
@@ -208,7 +209,7 @@ describe("ReadingListPopup", () => {
 
 			await popup.updateComplete;
 
-			const itemList = popup.shadowRoot?.querySelector("item-list") as any;
+			const itemList = popup.shadowRoot?.querySelector("item-list") as ItemList;
 			expect(itemList.items.length).toBe(1);
 			expect(itemList.items[0]).toEqual(mockItems[0]);
 		});
@@ -230,7 +231,7 @@ describe("ReadingListPopup", () => {
 
 			await popup.updateComplete;
 
-			const itemList = popup.shadowRoot?.querySelector("item-list") as any;
+			const itemList = popup.shadowRoot?.querySelector("item-list") as ItemList;
 			expect(itemList.items.length).toBe(2);
 		});
 	});
@@ -315,7 +316,9 @@ describe("ReadingListPopup", () => {
 			await newPopup.updateComplete;
 
 			// connectedCallbackが呼ばれた直後の状態を確認
-			const itemList = newPopup.shadowRoot?.querySelector("item-list") as any;
+			const itemList = newPopup.shadowRoot?.querySelector(
+				"item-list",
+			) as ItemList;
 			expect(itemList.loading).toBe(true);
 		});
 
@@ -324,7 +327,7 @@ describe("ReadingListPopup", () => {
 			await popup.loadItems();
 			await popup.updateComplete;
 
-			const itemList = popup.shadowRoot?.querySelector("item-list") as any;
+			const itemList = popup.shadowRoot?.querySelector("item-list") as ItemList;
 			expect(itemList.loading).toBe(false);
 			expect(itemList.items).toEqual(mockItems);
 		});
