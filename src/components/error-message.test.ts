@@ -1,0 +1,222 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import "./error-message";
+import type { ErrorMessage } from "./error-message";
+
+describe("ErrorMessage", () => {
+	let container: HTMLElement;
+	let errorMessage: ErrorMessage;
+
+	beforeEach(async () => {
+		document.body.innerHTML = "";
+		container = document.createElement("div");
+		document.body.appendChild(container);
+
+		errorMessage = document.createElement("error-message") as ErrorMessage;
+		container.appendChild(errorMessage);
+		await errorMessage.updateComplete;
+	});
+
+	describe("エラー表示", () => {
+		it("エラーメッセージが表示される", async () => {
+			errorMessage.message = "テストエラーメッセージ";
+			await errorMessage.updateComplete;
+
+			const messageDiv = errorMessage.shadowRoot?.querySelector(".message");
+			expect(messageDiv?.textContent).toBe("テストエラーメッセージ");
+		});
+
+		it("エラーメッセージが空の場合は何も表示されない", async () => {
+			errorMessage.message = "";
+			await errorMessage.updateComplete;
+
+			const container =
+				errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container).toBeFalsy();
+		});
+
+		it("エラータイプによってスタイルが変わる", async () => {
+			// 通常のエラー
+			errorMessage.message = "通常のエラー";
+			errorMessage.type = "error";
+			await errorMessage.updateComplete;
+
+			let container =
+				errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container?.classList.contains("error")).toBe(true);
+
+			// 警告
+			errorMessage.type = "warning";
+			await errorMessage.updateComplete;
+
+			container = errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container?.classList.contains("warning")).toBe(true);
+
+			// 情報
+			errorMessage.type = "info";
+			await errorMessage.updateComplete;
+
+			container = errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container?.classList.contains("info")).toBe(true);
+		});
+
+		it("アイコンが表示される", async () => {
+			errorMessage.message = "エラー";
+			errorMessage.type = "error";
+			await errorMessage.updateComplete;
+
+			const icon = errorMessage.shadowRoot?.querySelector(".icon");
+			expect(icon).toBeTruthy();
+		});
+	});
+
+	describe("自動非表示", () => {
+		it("指定時間後に自動的に非表示になる", async () => {
+			vi.useFakeTimers();
+
+			errorMessage.message = "自動非表示テスト";
+			errorMessage.autoHide = true;
+			errorMessage.autoHideDelay = 3000;
+			await errorMessage.updateComplete;
+
+			// 初期状態では表示されている
+			let container =
+				errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container).toBeTruthy();
+
+			// 3秒経過
+			vi.advanceTimersByTime(3000);
+			await errorMessage.updateComplete;
+
+			// 非表示になっている
+			container = errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container?.classList.contains("hiding")).toBe(true);
+
+			vi.useRealTimers();
+		});
+
+		it("autoHideがfalseの場合は非表示にならない", async () => {
+			vi.useFakeTimers();
+
+			errorMessage.message = "永続表示テスト";
+			errorMessage.autoHide = false;
+			await errorMessage.updateComplete;
+
+			// 5秒経過
+			vi.advanceTimersByTime(5000);
+			await errorMessage.updateComplete;
+
+			// まだ表示されている
+			const container =
+				errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container).toBeTruthy();
+			expect(container?.classList.contains("hiding")).toBe(false);
+
+			vi.useRealTimers();
+		});
+	});
+
+	describe("閉じるボタン", () => {
+		it("閉じるボタンをクリックすると非表示になる", async () => {
+			errorMessage.message = "閉じるボタンテスト";
+			errorMessage.showCloseButton = true;
+			await errorMessage.updateComplete;
+
+			const closeButton = errorMessage.shadowRoot?.querySelector(
+				".close-button",
+			) as HTMLButtonElement;
+			expect(closeButton).toBeTruthy();
+
+			// クリック
+			closeButton.click();
+			await errorMessage.updateComplete;
+
+			// 非表示になっている
+			const container =
+				errorMessage.shadowRoot?.querySelector(".error-container");
+			expect(container).toBeFalsy();
+		});
+
+		it("showCloseButtonがfalseの場合は閉じるボタンが表示されない", async () => {
+			errorMessage.message = "閉じるボタンなし";
+			errorMessage.showCloseButton = false;
+			await errorMessage.updateComplete;
+
+			const closeButton =
+				errorMessage.shadowRoot?.querySelector(".close-button");
+			expect(closeButton).toBeFalsy();
+		});
+	});
+
+	describe("イベント", () => {
+		it("エラークリア時にerror-clearedイベントが発火する", async () => {
+			const listener = vi.fn();
+			errorMessage.addEventListener("error-cleared", listener);
+
+			errorMessage.message = "イベントテスト";
+			errorMessage.showCloseButton = true;
+			await errorMessage.updateComplete;
+
+			const closeButton = errorMessage.shadowRoot?.querySelector(
+				".close-button",
+			) as HTMLButtonElement;
+			closeButton.click();
+
+			expect(listener).toHaveBeenCalled();
+		});
+
+		it("新しいエラーメッセージが設定されるとerror-shownイベントが発火する", async () => {
+			const listener = vi.fn();
+			errorMessage.addEventListener("error-shown", listener);
+
+			errorMessage.message = "新しいエラー";
+			await errorMessage.updateComplete;
+
+			expect(listener).toHaveBeenCalled();
+		});
+	});
+
+	describe("特定のエラー対応", () => {
+		it("ストレージ容量超過エラーの場合、特別なメッセージが表示される", async () => {
+			errorMessage.message = "Storage limit reached";
+			errorMessage.type = "error";
+			await errorMessage.updateComplete;
+
+			const messageDiv = errorMessage.shadowRoot?.querySelector(".message");
+			expect(messageDiv?.textContent).toContain("Storage limit reached");
+
+			// 追加の説明があるか確認
+			const description =
+				errorMessage.shadowRoot?.querySelector(".description");
+			expect(description?.textContent).toContain("512");
+		});
+
+		it("ネットワークエラーの場合、リトライボタンが表示される", async () => {
+			errorMessage.message = "Network error";
+			errorMessage.type = "error";
+			errorMessage.showRetryButton = true;
+			await errorMessage.updateComplete;
+
+			const retryButton = errorMessage.shadowRoot?.querySelector(
+				".retry-button",
+			) as HTMLButtonElement;
+			expect(retryButton).toBeTruthy();
+			expect(retryButton.textContent?.trim()).toBe("Retry");
+		});
+
+		it("リトライボタンクリックでretryイベントが発火する", async () => {
+			const listener = vi.fn();
+			errorMessage.addEventListener("retry", listener);
+
+			errorMessage.message = "Network error";
+			errorMessage.showRetryButton = true;
+			await errorMessage.updateComplete;
+
+			const retryButton = errorMessage.shadowRoot?.querySelector(
+				".retry-button",
+			) as HTMLButtonElement;
+			retryButton.click();
+
+			expect(listener).toHaveBeenCalled();
+		});
+	});
+});

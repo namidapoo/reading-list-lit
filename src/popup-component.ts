@@ -4,6 +4,7 @@ import { ReadingListStorage } from "./storage";
 import type { ReadingItem } from "./types";
 import "./components/search-box";
 import "./components/item-list";
+import "./components/error-message";
 
 @customElement("reading-list-popup")
 export class ReadingListPopup extends LitElement {
@@ -160,6 +161,9 @@ export class ReadingListPopup extends LitElement {
 	@state()
 	private successMessage = "";
 
+	@state()
+	private isRetrying = false;
+
 	storage: ReadingListStorage;
 
 	constructor() {
@@ -234,6 +238,7 @@ export class ReadingListPopup extends LitElement {
 
 			await this.storage.addItem(tab.url, tab.title);
 			this.successMessage = "Page added successfully";
+			this.error = "";
 			await this.loadItems();
 
 			// Clear success message after 3 seconds
@@ -241,7 +246,15 @@ export class ReadingListPopup extends LitElement {
 				this.successMessage = "";
 			}, 3000);
 		} catch (error) {
-			this.error = "Failed to add page";
+			if (error instanceof Error) {
+				if (error.message.includes("Storage limit")) {
+					this.error = "Storage limit reached";
+				} else {
+					this.error = "Failed to add page";
+				}
+			} else {
+				this.error = "Failed to add page";
+			}
 			console.error("Failed to add page:", error);
 		} finally {
 			this.adding = false;
@@ -284,7 +297,15 @@ export class ReadingListPopup extends LitElement {
 		} catch (error) {
 			console.error("Failed to delete item:", error);
 			this.error = "Failed to delete item";
+			this.successMessage = "";
 		}
+	}
+
+	private async handleRetry() {
+		this.isRetrying = true;
+		this.error = "";
+		await this.loadItems();
+		this.isRetrying = false;
 	}
 
 	override render() {
@@ -316,7 +337,24 @@ export class ReadingListPopup extends LitElement {
 				</header>
 
 				${
-					this.error ? html`<div class="error-message">${this.error}</div>` : ""
+					this.error
+						? html`
+							<error-message
+								.message=${this.error}
+								type="error"
+								.autoHide=${!this.error.includes("Storage limit")}
+								.autoHideDelay=${5000}
+								.showRetryButton=${
+									this.error.includes("Network") ||
+									this.error.includes("Failed to load")
+								}
+								@error-cleared=${() => {
+									this.error = "";
+								}}
+								@retry=${() => this.handleRetry()}
+							></error-message>
+						`
+						: ""
 				}
 				${
 					this.successMessage
@@ -334,7 +372,7 @@ export class ReadingListPopup extends LitElement {
 				<div class="content">
 					<item-list
 						.items=${this.items}
-						.loading=${this.loading}
+						.loading=${this.loading || this.isRetrying}
 						@item-click=${this.handleItemClick}
 						@item-delete=${this.handleItemDelete}
 					></item-list>
