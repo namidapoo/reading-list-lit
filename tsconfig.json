@@ -23,7 +23,7 @@
 		"noUncheckedSideEffectImports": true,
 
 		/* Vitest */
-		"types": ["@vitest/browser/providers/playwright"]
+		"types": ["@vitest/browser/providers/playwright", "chrome"]
 	},
 	"include": ["src"]
 }
