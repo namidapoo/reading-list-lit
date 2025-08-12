@@ -10,6 +10,7 @@ export class ItemList extends LitElement {
 			display: block;
 			width: 100%;
 			height: 100%;
+			overflow: hidden;
 		}
 
 		.item-list-container {
@@ -19,6 +20,14 @@ export class ItemList extends LitElement {
 			padding: 8px;
 			overflow-y: auto;
 			overflow-x: hidden;
+			height: 100%;
+			box-sizing: border-box;
+		}
+
+		/* Ensure proper width for items */
+		.item-list-container reading-item {
+			width: 100%;
+			box-sizing: border-box;
 		}
 
 		.empty-state,
@@ -87,23 +96,29 @@ export class ItemList extends LitElement {
 			margin-bottom: 16px;
 		}
 
-		/* Scrollbar styles */
+		/* Scrollbar styles - overlay style to not take up space */
+		.item-list-container {
+			scrollbar-width: thin;
+			scrollbar-gutter: stable;
+		}
+
 		.item-list-container::-webkit-scrollbar {
-			width: 6px;
+			width: 8px;
 		}
 
 		.item-list-container::-webkit-scrollbar-track {
-			background: var(--color-surface, #f9fafb);
-			border-radius: 3px;
+			background: transparent;
 		}
 
 		.item-list-container::-webkit-scrollbar-thumb {
-			background: var(--color-border, #e5e7eb);
-			border-radius: 3px;
+			background-color: var(--color-border, #e5e7eb);
+			border-radius: 4px;
+			border: 2px solid transparent;
+			background-clip: padding-box;
 		}
 
 		.item-list-container::-webkit-scrollbar-thumb:hover {
-			background: var(--color-text-placeholder, #9ca3af);
+			background-color: var(--color-text-placeholder, #9ca3af);
 		}
 
 		/* No animation on initial load to prevent lag */
@@ -118,9 +133,6 @@ export class ItemList extends LitElement {
 
 	@property({ type: String })
 	error = "";
-
-	@property({ type: String })
-	maxHeight = "100%";
 
 	private renderEmpty() {
 		return html`
@@ -174,10 +186,7 @@ export class ItemList extends LitElement {
 
 	private renderItems() {
 		return html`
-			<div 
-				class="item-list-container" 
-				style="max-height: ${this.maxHeight}"
-			>
+			<div class="item-list-container">
 				${this.items.map(
 					(item) => html`
 						<reading-item 

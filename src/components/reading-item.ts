@@ -50,15 +50,20 @@ export class ReadingItemElement extends LitElement {
 			display: flex;
 			flex-direction: column;
 			gap: 4px;
+			padding-right: 36px; /* Space for delete button */
 		}
 
 		.item-title {
 			font-size: var(--font-sm, 0.875rem);
 			font-weight: 500;
 			color: var(--color-text-primary, #111827);
+			line-height: 1.3;
+			word-wrap: break-word;
+			overflow-wrap: break-word;
+			display: -webkit-box;
+			-webkit-line-clamp: 2; /* Limit to 2 lines */
+			-webkit-box-orient: vertical;
 			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
 		}
 
 		.item-meta {
@@ -74,6 +79,7 @@ export class ReadingItemElement extends LitElement {
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+			max-width: 200px; /* Limit URL width */
 		}
 
 		.item-time {
@@ -189,6 +195,15 @@ export class ReadingItemElement extends LitElement {
 		return `${days} ${days === 1 ? "day" : "days"} ago`;
 	}
 
+	private formatUrl(url: string): string {
+		try {
+			const urlObj = new URL(url);
+			return urlObj.hostname.replace(/^www\./, ""); // Remove 'www.' prefix
+		} catch {
+			return url; // Fallback to original URL if parsing fails
+		}
+	}
+
 	override render() {
 		if (!this.item) {
 			return html``;
@@ -229,7 +244,7 @@ export class ReadingItemElement extends LitElement {
 				<div class="item-content">
 					<div class="item-title">${title}</div>
 					<div class="item-meta">
-						<span class="item-url">${url}</span>
+						<span class="item-url" title="${url}">${this.formatUrl(url)}</span>
 						<span class="item-time">${this.formatRelativeTime(addedAt)}</span>
 					</div>
 				</div>

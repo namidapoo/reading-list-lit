@@ -177,15 +177,18 @@ describe("ItemList", () => {
 			expect(styles.overflowY).toBe("auto");
 		});
 
-		it("maxHeightプロパティで最大高さを設定できる", async () => {
-			itemList.maxHeight = "300px";
+		it("スクロールコンテナが適切に設定される", async () => {
 			itemList.items = mockItems;
 			await itemList.updateComplete;
 
 			const scrollContainer = itemList.shadowRoot?.querySelector(
 				".item-list-container",
 			) as HTMLElement;
-			expect(scrollContainer.style.maxHeight).toBe("300px");
+			expect(scrollContainer).toBeTruthy();
+
+			const styles = getComputedStyle(scrollContainer);
+			expect(styles.height).toBe("100%");
+			expect(styles.boxSizing).toBe("border-box");
 		});
 	});
 

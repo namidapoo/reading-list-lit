@@ -11,9 +11,8 @@ export class ReadingListPopup extends LitElement {
 	static override styles = css`
 		:host {
 			display: block;
-			width: 400px;
-			min-height: 500px;
-			max-height: 600px;
+			width: 100%;
+			height: 100%;
 			background-color: var(--color-background, #ffffff);
 			color: var(--color-text-primary, #111827);
 			font-family: system-ui, -apple-system, sans-serif;
@@ -23,7 +22,6 @@ export class ReadingListPopup extends LitElement {
 			display: flex;
 			flex-direction: column;
 			height: 100%;
-			max-height: 600px;
 		}
 
 		.header {
@@ -109,6 +107,7 @@ export class ReadingListPopup extends LitElement {
 			overflow: hidden;
 			display: flex;
 			flex-direction: column;
+			min-height: 0; /* Important for flex children to scroll properly */
 		}
 
 		.error-message {
