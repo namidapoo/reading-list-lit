@@ -106,21 +106,8 @@ export class ItemList extends LitElement {
 			background: var(--color-text-placeholder, #9ca3af);
 		}
 
-		/* Fade in animation for items */
-		reading-item {
-			animation: fadeIn var(--transition-base, 250ms ease);
-		}
-
-		@keyframes fadeIn {
-			from {
-				opacity: 0;
-				transform: translateY(4px);
-			}
-			to {
-				opacity: 1;
-				transform: translateY(0);
-			}
-		}
+		/* No animation on initial load to prevent lag */
+		/* Animation will be applied via state when needed */
 	`;
 
 	@property({ type: Array })

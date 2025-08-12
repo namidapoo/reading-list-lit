@@ -161,9 +161,6 @@ export class ReadingListPopup extends LitElement {
 	@state()
 	private successMessage = "";
 
-	@state()
-	private isRetrying = false;
-
 	storage: ReadingListStorage;
 
 	constructor() {
@@ -173,7 +170,7 @@ export class ReadingListPopup extends LitElement {
 
 	override connectedCallback() {
 		super.connectedCallback();
-		this.loadItems();
+		this.loadItems(true); // Initial load
 		this.setupStorageListener();
 	}
 
@@ -185,13 +182,16 @@ export class ReadingListPopup extends LitElement {
 	private setupStorageListener() {
 		// Listen for storage changes from other sources
 		chrome.storage.sync.onChanged.addListener(() => {
-			this.loadItems();
+			this.loadItems(false); // Not initial load
 		});
 	}
 
-	async loadItems() {
+	async loadItems(isInitialLoad = false) {
 		try {
-			this.loading = true;
+			// Only show loading indicator on initial load, not during search
+			if (isInitialLoad) {
+				this.loading = true;
+			}
 			this.error = "";
 
 			if (this.searchQuery) {
@@ -205,7 +205,9 @@ export class ReadingListPopup extends LitElement {
 			this.error = "Failed to load items";
 			console.error("Failed to load items:", error);
 		} finally {
-			this.loading = false;
+			if (isInitialLoad) {
+				this.loading = false;
+			}
 		}
 	}
 
@@ -302,10 +304,8 @@ export class ReadingListPopup extends LitElement {
 	}
 
 	private async handleRetry() {
-		this.isRetrying = true;
 		this.error = "";
-		await this.loadItems();
-		this.isRetrying = false;
+		await this.loadItems(true); // Show loading on retry
 	}
 
 	override render() {
@@ -372,7 +372,7 @@ export class ReadingListPopup extends LitElement {
 				<div class="content">
 					<item-list
 						.items=${this.items}
-						.loading=${this.loading || this.isRetrying}
+						.loading=${this.loading}
 						@item-click=${this.handleItemClick}
 						@item-delete=${this.handleItemDelete}
 					></item-list>

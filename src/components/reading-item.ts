@@ -117,21 +117,7 @@ export class ReadingItemElement extends LitElement {
 			visibility: visible;
 		}
 
-		/* Animation */
-		@keyframes slideIn {
-			from {
-				opacity: 0;
-				transform: translateX(-20px);
-			}
-			to {
-				opacity: 1;
-				transform: translateX(0);
-			}
-		}
-
-		:host {
-			animation: slideIn var(--transition-base, 250ms ease);
-		}
+		/* No animation to prevent lag */
 	`;
 
 	@property({ type: Object })
