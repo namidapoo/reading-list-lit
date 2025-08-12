@@ -123,10 +123,12 @@ describe("ItemList", () => {
 			await itemList.updateComplete;
 
 			const firstItem = itemList.shadowRoot?.querySelector("reading-item");
+			// composed: trueを追加してShadow DOMを超えて伝播させる
 			firstItem?.dispatchEvent(
 				new CustomEvent("item-click", {
 					detail: { item: mockItems[0], newTab: false },
 					bubbles: true,
+					composed: true,
 				}),
 			);
 
@@ -147,10 +149,12 @@ describe("ItemList", () => {
 
 			const secondItem =
 				itemList.shadowRoot?.querySelectorAll("reading-item")[1];
+			// composed: trueを追加してShadow DOMを超えて伝播させる
 			secondItem?.dispatchEvent(
 				new CustomEvent("item-delete", {
 					detail: { item: mockItems[1] },
 					bubbles: true,
+					composed: true,
 				}),
 			);
 

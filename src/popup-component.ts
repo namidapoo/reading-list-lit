@@ -282,6 +282,8 @@ export class ReadingListPopup extends LitElement {
 				await chrome.tabs.update({
 					url: item.url,
 				});
+				// Close the popup after opening in current tab
+				window.close();
 			}
 		} catch (error) {
 			console.error("Failed to open URL:", error);

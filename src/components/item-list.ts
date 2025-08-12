@@ -186,35 +186,11 @@ export class ItemList extends LitElement {
 					(item) => html`
 						<reading-item 
 							.item=${item}
-							@item-click=${this.handleItemClick}
-							@item-delete=${this.handleItemDelete}
 						></reading-item>
 					`,
 				)}
 			</div>
 		`;
-	}
-
-	private handleItemClick(event: CustomEvent) {
-		// イベントをそのまま伝播
-		this.dispatchEvent(
-			new CustomEvent("item-click", {
-				detail: event.detail,
-				bubbles: true,
-				composed: true,
-			}),
-		);
-	}
-
-	private handleItemDelete(event: CustomEvent) {
-		// イベントをそのまま伝播
-		this.dispatchEvent(
-			new CustomEvent("item-delete", {
-				detail: event.detail,
-				bubbles: true,
-				composed: true,
-			}),
-		);
 	}
 
 	override render() {

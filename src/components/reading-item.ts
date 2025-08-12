@@ -128,10 +128,12 @@ export class ReadingItemElement extends LitElement {
 			return;
 		}
 
+		// Always prevent default to avoid any browser link behavior
 		event.preventDefault();
 		event.stopPropagation();
 
-		const newTab = event.ctrlKey || event.metaKey;
+		// Check for modifier keys for new tab
+		const newTab = event.ctrlKey || event.metaKey || event.shiftKey;
 
 		this.dispatchEvent(
 			new CustomEvent("item-click", {
