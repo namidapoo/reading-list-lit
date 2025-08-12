@@ -16,13 +16,15 @@ export class ItemList extends LitElement {
 		.item-list-container {
 			display: grid;
 			grid-template-columns: 1fr;
+			grid-auto-rows: max-content; /* Items only take needed height */
 			gap: 8px;
-			padding: 8px;
+			padding: 8px 8px 8px 16px; /* Left padding to balance scrollbar gutter */
 			overflow-y: auto;
 			overflow-x: hidden;
 			height: 100%;
 			box-sizing: border-box;
 			scrollbar-gutter: stable; /* Reserve space for scrollbar */
+			align-content: start; /* Align items to the top */
 		}
 
 		.empty-state,

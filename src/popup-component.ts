@@ -12,7 +12,7 @@ export class ReadingListPopup extends LitElement {
 		:host {
 			display: block;
 			width: 100%;
-			height: 100%;
+			height: fit-content;
 			background-color: var(--color-background, #ffffff);
 			color: var(--color-text-primary, #111827);
 			font-family: system-ui, -apple-system, sans-serif;
@@ -21,14 +21,16 @@ export class ReadingListPopup extends LitElement {
 		.container {
 			display: flex;
 			flex-direction: column;
-			height: 100%;
+			min-height: 200px;
+			max-height: 600px;
+			height: fit-content;
 		}
 
 		.header {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 16px;
+			padding: 0px 18px; /* Reduced vertical padding, horizontal matches list */
 			background-color: var(--color-surface, #f9fafb);
 			border-bottom: 1px solid var(--color-border, #e5e7eb);
 		}
@@ -97,17 +99,18 @@ export class ReadingListPopup extends LitElement {
 		}
 
 		.search-container {
-			padding: 12px 16px;
+			padding: 12px 18px 12px 16px; /* Match item list padding */
 			background-color: var(--color-background, #ffffff);
 			border-bottom: 1px solid var(--color-border, #e5e7eb);
 		}
 
 		.content {
-			flex: 1;
+			flex: 1 1 auto;
 			overflow: hidden;
 			display: flex;
 			flex-direction: column;
 			min-height: 0; /* Important for flex children to scroll properly */
+			max-height: 400px; /* Leave room for header and search */
 		}
 
 		.error-message {
