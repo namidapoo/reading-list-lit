@@ -18,10 +18,10 @@
 
 以下のVite + Litテンプレートファイルは不要なため削除する：
 
-- [ ] `src/my-element.ts`を削除する
-- [ ] `src/my-button.ts`を削除する
-- [ ] `src/my-button.test.ts`を削除する
-- [ ] `index.html`を削除する（Chrome拡張用のpopup.htmlに置き換え）
+- [x] `src/my-element.ts`を削除する
+- [x] `src/my-button.ts`を削除する
+- [x] `src/my-button.test.ts`を削除する
+- [x] `index.html`を削除する（Chrome拡張用のpopup.htmlに置き換え）
 
 ### 1.1 プロジェクト構造とManifest設定
 
