@@ -87,26 +87,26 @@
 
 ### 3.1 基本スタイリングシステム
 
-- [ ] `src/styles/globals.css`を作成する
-- [ ] CSS Custom Propertiesを定義する
-- [ ] ライトモード用の変数を定義する
-- [ ] ダークモード用の変数を定義する（NF4.3）
-- [ ] 共通アニメーション定義を追加する
+- [x] `src/styles/globals.css`を作成する
+- [x] CSS Custom Propertiesを定義する
+- [x] ライトモード用の変数を定義する
+- [x] ダークモード用の変数を定義する（NF4.3）
+- [x] 共通アニメーション定義を追加する
 
 ### 3.2 SearchBoxコンポーネント（TDD）
 
-- [ ] `src/components/search-box.test.ts`を作成する
-  - [ ] レンダリングテストを書く
-  - [ ] 入力イベントテストを書く
-  - [ ] search-changedイベント発火テストを書く
-  - [ ] デバウンステストを書く（100ms）
-- [ ] `src/components/search-box.ts`を実装する
-  - [ ] Litコンポーネント基本構造
-  - [ ] 入力フィールド実装
-  - [ ] デバウンス処理実装
-  - [ ] イベント発火実装
-- [ ] スタイリングを適用する
-- [ ] 全テストが通ることを確認する
+- [x] `src/components/search-box.test.ts`を作成する
+  - [x] レンダリングテストを書く
+  - [x] 入力イベントテストを書く
+  - [x] search-changedイベント発火テストを書く
+  - [x] デバウンステストを書く（100ms）
+- [x] `src/components/search-box.ts`を実装する
+  - [x] Litコンポーネント基本構造
+  - [x] 入力フィールド実装
+  - [x] デバウンス処理実装
+  - [x] イベント発火実装
+- [x] スタイリングを適用する
+- [x] 全テストが通ることを確認する
 
 ### 3.3 ReadingItemコンポーネント（TDD）
 
