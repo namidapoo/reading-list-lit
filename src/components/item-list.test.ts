@@ -88,7 +88,8 @@ describe("ItemList", () => {
 
 			const items = itemList.shadowRoot?.querySelectorAll("reading-item");
 			items?.forEach((item, index) => {
-				expect((item as any).item).toEqual(mockItems[index]);
+				const readingItem = item as HTMLElement & { item: ReadingItem };
+				expect(readingItem.item).toEqual(mockItems[index]);
 			});
 		});
 
