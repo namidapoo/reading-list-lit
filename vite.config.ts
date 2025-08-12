@@ -8,11 +8,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	base: "./",
 	build: {
 		rollupOptions: {
 			input: {
 				popup: resolve(__dirname, "popup.html"),
-				background: resolve(__dirname, "background.html"),
 			},
 			output: {
 				entryFileNames: "[name].js",
