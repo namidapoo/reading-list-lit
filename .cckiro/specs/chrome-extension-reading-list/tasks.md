@@ -36,12 +36,12 @@
 
 ### 1.2 TypeScript型定義
 
-- [ ] `src/types/index.ts`を作成する
-- [ ] `ReadingItem`インターフェースを定義する
-- [ ] `SavePageMessage`インターフェースを定義する
-- [ ] `ErrorCode` enumを定義する
-- [ ] `ReadingListError`クラスを定義する
-- [ ] TypeScriptコンパイルが通ることを確認する
+- [x] `src/types/index.ts`を作成する
+- [x] `ReadingItem`インターフェースを定義する
+- [x] `SavePageMessage`インターフェースを定義する
+- [x] `ErrorCode` enumを定義する
+- [x] `ReadingListError`クラスを定義する
+- [x] TypeScriptコンパイルが通ることを確認する
 
 ## Phase 2: Storage Layer実装（TDD）
 
