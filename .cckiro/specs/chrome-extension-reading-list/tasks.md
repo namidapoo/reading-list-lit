@@ -47,7 +47,7 @@
 
 ### 2.1 Storage Layerテスト作成
 
-- [ ] `src/__tests__/storage.test.ts`を作成する
+- [ ] `src/storage.test.ts`を作成する
 - [ ] `addItem`メソッドのテストを書く
   - [ ] 正常なアイテム追加のテスト
   - [ ] 重複URL処理のテスト（R1.4）
@@ -95,7 +95,7 @@
 
 ### 3.2 SearchBoxコンポーネント（TDD）
 
-- [ ] `src/__tests__/components/search-box.test.ts`を作成する
+- [ ] `src/components/search-box.test.ts`を作成する
   - [ ] レンダリングテストを書く
   - [ ] 入力イベントテストを書く
   - [ ] search-changedイベント発火テストを書く
@@ -110,7 +110,7 @@
 
 ### 3.3 ReadingItemコンポーネント（TDD）
 
-- [ ] `src/__tests__/components/reading-item.test.ts`を作成する
+- [ ] `src/components/reading-item.test.ts`を作成する
   - [ ] レンダリングテストを書く（R2.2）
   - [ ] 通常クリックテストを書く（R4.1）
   - [ ] Ctrl/Cmd+クリックテストを書く（R4.2）
@@ -127,7 +127,7 @@
 
 ### 3.4 ItemListコンポーネント（TDD）
 
-- [ ] `src/__tests__/components/item-list.test.ts`を作成する
+- [ ] `src/components/item-list.test.ts`を作成する
   - [ ] 空状態表示テストを書く
   - [ ] 複数アイテム表示テストを書く
   - [ ] アイテムクリックイベント伝播テストを書く
@@ -141,7 +141,7 @@
 
 ### 3.5 ReadingListPopupメインコンポーネント（TDD）
 
-- [ ] `src/__tests__/popup.test.ts`を作成する
+- [ ] `src/popup.test.ts`を作成する
   - [ ] ヘッダー表示テストを書く（R2.3）
   - [ ] 「+」ボタンクリックテストを書く（R1.1）
   - [ ] 検索連携テストを書く
@@ -160,7 +160,7 @@
 
 ### 4.1 Background Scriptテスト作成
 
-- [ ] `src/__tests__/background.test.ts`を作成する
+- [ ] `src/background.test.ts`を作成する
   - [ ] ServiceWorker起動テストを書く
   - [ ] コンテキストメニュー作成テストを書く
   - [ ] ページ保存処理テストを書く（R1.2）
