@@ -20,8 +20,8 @@ export class ReadingListPopup extends LitElement {
 			--rl-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 			--rl-link-color: #555;
 			--rl-link-hover-bg: #fff;
-			--primary-color: #66cc98;
-			--primary-color-focus: #44aa76;
+			--primary-color: #3EA8FF;
+			--primary-color-focus: #2196F3;
 
 			display: block;
 			font-family: var(--base-font);

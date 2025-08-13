@@ -25,9 +25,7 @@ describe("SearchBox", () => {
 			const input = searchBox.shadowRoot?.querySelector("input[type='search']");
 
 			expect(input).toBeTruthy();
-			expect(input?.getAttribute("placeholder")).toBe(
-				"Search by title or URL...",
-			);
+			expect(input?.getAttribute("placeholder")).toBe("Search...");
 		});
 
 		it("検索アイコンが表示される", async () => {

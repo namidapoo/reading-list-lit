@@ -39,7 +39,7 @@ export class SearchBox extends LitElement {
 
 		input:focus {
 			outline: 3px solid lightblue;
-			border-color: #66cc98;
+			border-color: #3EA8FF;
 		}
 
 		input[type='search'] {
@@ -85,7 +85,7 @@ export class SearchBox extends LitElement {
 			}
 
 			input:focus {
-				border-color: #66cc98;
+				border-color: #3EA8FF;
 			}
 
 			.search-icon {
@@ -107,7 +107,7 @@ export class SearchBox extends LitElement {
 	value = "";
 
 	@property({ type: String })
-	placeholder = "Search by title or URL...";
+	placeholder = "Search...";
 
 	@state()
 	private debounceTimer?: number;

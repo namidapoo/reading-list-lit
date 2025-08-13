@@ -14,8 +14,8 @@ export class ReadingItemElement extends LitElement {
 			--rl-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
 			--rl-link-color: #555;
 			--rl-link-hover-bg: #fff;
-			--primary-color: #66cc98;
-			--primary-color-focus: #44aa76;
+			--primary-color: #3EA8FF;
+			--primary-color-focus: #2196F3;
 			--rl-item-gap: 0.5rem;
 			
 			font-family: var(--base-font);
@@ -96,7 +96,7 @@ export class ReadingItemElement extends LitElement {
 
 		.item-meta {
 			display: flex;
-			align-items: center;
+			align-items: baseline;
 			gap: 8px;
 			font-size: 0.9em;
 			opacity: 0.8;
@@ -111,7 +111,7 @@ export class ReadingItemElement extends LitElement {
 
 		.item-time {
 			white-space: nowrap;
-			font-size: 0.85em;
+			color: #999;
 		}
 
 		.delete-button {
@@ -192,6 +192,10 @@ export class ReadingItemElement extends LitElement {
 			.default-icon {
 				background: #2c313a;
 				color: #888;
+			}
+
+			.item-time {
+				color: #aaa;
 			}
 
 			.delete-button {

@@ -13,11 +13,10 @@ export class ErrorMessage extends LitElement {
 
 		.error-container {
 			display: flex;
-			align-items: flex-start;
+			align-items: center;
 			gap: 0.75rem;
 			padding: 0.75rem;
 			border-radius: 0.5rem;
-			margin-bottom: 1rem;
 			animation: slideDown 0.25s ease-out;
 			position: relative;
 		}
@@ -71,7 +70,6 @@ export class ErrorMessage extends LitElement {
 			width: 20px;
 			height: 20px;
 			flex-shrink: 0;
-			margin-top: 2px;
 		}
 
 		.content {
@@ -118,9 +116,8 @@ export class ErrorMessage extends LitElement {
 		}
 
 		.close-button {
-			position: absolute;
-			top: 0.5rem;
-			right: 0.5rem;
+			position: relative;
+			margin-left: auto;
 			width: 24px;
 			height: 24px;
 			border: none;

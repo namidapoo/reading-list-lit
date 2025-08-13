@@ -42,7 +42,7 @@ export class ItemList extends LitElement {
 			width: 32px;
 			height: 32px;
 			border: 3px solid #f3f3f3;
-			border-top: 3px solid #66cc98;
+			border-top: 3px solid #3EA8FF;
 			border-radius: 50%;
 			animation: spin 1s linear infinite;
 			margin-bottom: 1rem;
@@ -93,7 +93,7 @@ export class ItemList extends LitElement {
 
 			.loading-spinner {
 				border-color: #333;
-				border-top-color: #66cc98;
+				border-top-color: #3EA8FF;
 			}
 		}
 	`;
