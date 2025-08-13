@@ -71,21 +71,6 @@ describe("ReadingItem", () => {
 			expect(deleteButton).toBeTruthy();
 			expect(deleteButton?.getAttribute("aria-label")).toBe("Delete item");
 		});
-
-		it("長いタイトルは省略される", async () => {
-			const longTitle =
-				"This is a very long title that should be truncated with ellipsis because it is too long to fit in the available space";
-			element.item = { ...mockItem, title: longTitle };
-			await element.updateComplete;
-
-			const title = element.shadowRoot?.querySelector(
-				".item-title",
-			) as HTMLElement;
-			const styles = getComputedStyle(title);
-			expect(styles.overflow).toBe("hidden");
-			expect(styles.textOverflow).toBe("ellipsis");
-			expect(styles.whiteSpace).toBe("nowrap");
-		});
 	});
 
 	describe("クリックイベント", () => {

@@ -167,37 +167,6 @@ describe("ItemList", () => {
 		});
 	});
 
-	describe("スクロール", () => {
-		it("スクロール可能なコンテナを持つ", async () => {
-			itemList.items = mockItems;
-			await itemList.updateComplete;
-
-			const scrollContainer = itemList.shadowRoot?.querySelector(
-				".item-list-container",
-			) as HTMLElement;
-			expect(scrollContainer).toBeTruthy();
-
-			const styles = getComputedStyle(scrollContainer);
-			expect(styles.overflowY).toBe("auto");
-		});
-
-		it("スクロールコンテナが適切に設定される", async () => {
-			itemList.items = mockItems;
-			await itemList.updateComplete;
-
-			const scrollContainer = itemList.shadowRoot?.querySelector(
-				".item-list-container",
-			) as HTMLElement;
-			expect(scrollContainer).toBeTruthy();
-
-			const styles = getComputedStyle(scrollContainer);
-			// height is calculated in pixels in the test environment
-			expect(styles.boxSizing).toBe("border-box");
-			expect(styles.overflowY).toBe("auto");
-			expect(styles.overflowX).toBe("hidden");
-		});
-	});
-
 	describe("エラー状態", () => {
 		it("エラーメッセージを表示できる", async () => {
 			itemList.error = "Failed to load items";

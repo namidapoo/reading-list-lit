@@ -1,4 +1,3 @@
-import "../../src/styles/globals.css";
 import "../../src/popup/app";
 
 // アプリケーションをマウント
