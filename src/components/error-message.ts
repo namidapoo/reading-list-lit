@@ -1,10 +1,180 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 type ErrorType = "error" | "warning" | "info";
 
 @customElement("error-message")
 export class ErrorMessage extends LitElement {
+	static override styles = css`
+		:host {
+			display: block;
+			width: 100%;
+		}
+
+		.error-container {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.75rem;
+			padding: 0.75rem;
+			border-radius: 0.5rem;
+			margin-bottom: 1rem;
+			animation: slideDown 0.25s ease-out;
+			position: relative;
+		}
+
+		.error-container.error {
+			background: #fee;
+			border: 1px solid #fcc;
+			color: #c00;
+		}
+
+		.error-container.warning {
+			background: #ffeaa7;
+			border: 1px solid #fdcb6e;
+			color: #6c5ce7;
+		}
+
+		.error-container.info {
+			background: #e3f2fd;
+			border: 1px solid #90caf9;
+			color: #1565c0;
+		}
+
+		.error-container.hiding {
+			animation: slideUp 0.25s ease-out forwards;
+			opacity: 0;
+		}
+
+		@keyframes slideDown {
+			from {
+				transform: translateY(-10px);
+				opacity: 0;
+			}
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		@keyframes slideUp {
+			from {
+				transform: translateY(0);
+				opacity: 1;
+			}
+			to {
+				transform: translateY(-10px);
+				opacity: 0;
+			}
+		}
+
+		.icon {
+			width: 20px;
+			height: 20px;
+			flex-shrink: 0;
+			margin-top: 2px;
+		}
+
+		.content {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.message {
+			font-weight: 500;
+			font-size: 0.9rem;
+			line-height: 1.4;
+		}
+
+		.description {
+			margin-top: 0.25rem;
+			font-size: 0.85rem;
+			opacity: 0.8;
+			line-height: 1.4;
+		}
+
+		.actions {
+			margin-top: 0.5rem;
+		}
+
+		.retry-button {
+			padding: 0.25rem 0.75rem;
+			background: white;
+			border: 1px solid currentColor;
+			border-radius: 0.25rem;
+			font-size: 0.85rem;
+			cursor: pointer;
+			color: inherit;
+			font-weight: 500;
+			transition: all 0.2s ease;
+		}
+
+		.retry-button:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.retry-button:active {
+			transform: translateY(0);
+		}
+
+		.close-button {
+			position: absolute;
+			top: 0.5rem;
+			right: 0.5rem;
+			width: 24px;
+			height: 24px;
+			border: none;
+			background: transparent;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: inherit;
+			opacity: 0.6;
+			padding: 0;
+			border-radius: 50%;
+			transition: all 0.2s ease;
+		}
+
+		.close-button:hover {
+			opacity: 1;
+			background: rgba(0, 0, 0, 0.1);
+		}
+
+		.close-button:focus-visible {
+			outline: 2px solid currentColor;
+			outline-offset: 2px;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			.error-container.error {
+				background: #4a1c1c;
+				border-color: #8b2c2c;
+				color: #ff9999;
+			}
+
+			.error-container.warning {
+				background: #4a3c1c;
+				border-color: #8b6c2c;
+				color: #ffcc66;
+			}
+
+			.error-container.info {
+				background: #1c2c4a;
+				border-color: #2c4c8b;
+				color: #99ccff;
+			}
+
+			.retry-button {
+				background: rgba(255, 255, 255, 0.1);
+			}
+
+			.close-button:hover {
+				background: rgba(255, 255, 255, 0.1);
+			}
+		}
+	`;
+
 	@property({ type: String })
 	message = "";
 

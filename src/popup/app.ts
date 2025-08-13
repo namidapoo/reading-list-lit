@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { ReadingListStorage } from "../lib/storage";
 import type { ReadingItem } from "../types";
@@ -8,6 +8,212 @@ import "../components/error-message";
 
 @customElement("reading-list-popup")
 export class ReadingListPopup extends LitElement {
+	static override styles = css`
+		:host {
+			--base-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+				Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+			--base-font-size: 13px;
+			--base-line-height: 1.4;
+			--container-width: 360px;
+			--spacer: 15px;
+			--rl-bg-color: #f7f7f7;
+			--rl-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+			--rl-link-color: #555;
+			--rl-link-hover-bg: #fff;
+			--primary-color: #66cc98;
+			--primary-color-focus: #44aa76;
+
+			display: block;
+			font-family: var(--base-font);
+			font-size: var(--base-font-size);
+			line-height: var(--base-line-height);
+			width: var(--container-width);
+			min-height: 400px;
+			max-height: 600px;
+			background: #fff;
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		:focus-visible {
+			outline: 3px solid lightblue;
+		}
+
+		.container {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			padding: 0 1rem;
+		}
+
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 0 0.5rem 0;
+			background: #fff;
+		}
+
+		.header-title {
+			margin: 0;
+			font-size: 1.4rem;
+			font-weight: 600;
+			color: #333;
+		}
+
+		.header-actions {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+		}
+
+		.item-count {
+			font-size: 0.85rem;
+			color: #666;
+			padding: 0.25rem 0.5rem;
+			background: #f0f0f0;
+			border-radius: 0.25rem;
+		}
+
+		.add-button {
+			--button-size: 2rem;
+			color: #fff;
+			background: var(--primary-color);
+			width: var(--button-size);
+			height: var(--button-size);
+			font-weight: bold;
+			border: 0;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.add-button:hover:not(:disabled) {
+			background-color: var(--primary-color-focus);
+			transform: scale(1.05);
+		}
+
+		.add-button:active:not(:disabled) {
+			transform: scale(0.95);
+		}
+
+		.add-button:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.add-button.loading svg {
+			animation: spin 1s linear infinite;
+		}
+
+		@keyframes spin {
+			from { transform: rotate(0deg); }
+			to { transform: rotate(360deg); }
+		}
+
+		.success-message {
+			padding: 0.75rem 0;
+			background: #d4edda;
+			color: #155724;
+			border: 1px solid #c3e6cb;
+			border-radius: 0.25rem;
+			margin: 0.5rem 0;
+			font-size: 0.9rem;
+			animation: slideDown 0.25s ease-out;
+		}
+
+		@keyframes slideDown {
+			from {
+				transform: translateY(-10px);
+				opacity: 0;
+			}
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		.search-container {
+			padding: 0.25rem 0;
+			background: transparent;
+		}
+
+		.content {
+			flex: 1;
+			overflow-y: auto;
+			padding: 0.75rem 0;
+			background: #fff;
+		}
+
+		error-message {
+			margin: 0.5rem 0;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:host {
+				--rl-bg-color: #23272e;
+				--rl-shadow: 0 1px 1px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
+				--rl-link-color: #e0e0e0;
+				--rl-link-hover-bg: #2c313a;
+				background: #181a20;
+			}
+
+			.container {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			padding: 0 1rem;
+		}
+
+			.header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 0 0.5rem 0;
+			background: #fff;
+		}
+
+			.header-title {
+				color: #e0e0e0;
+			}
+
+			.item-count {
+				background: #2c313a;
+				color: #999;
+			}
+
+			.search-container {
+			padding: 0.25rem 0;
+			background: transparent;
+		}
+
+			.content {
+			flex: 1;
+			overflow-y: auto;
+			padding: 0.75rem 0;
+			background: #fff;
+		}
+
+			.success-message {
+			padding: 0.75rem 0;
+			background: #d4edda;
+			color: #155724;
+			border: 1px solid #c3e6cb;
+			border-radius: 0.25rem;
+			margin: 0.5rem 0;
+			font-size: 0.9rem;
+			animation: slideDown 0.25s ease-out;
+		}
+		}
+	`;
+
 	@state()
 	private items: ReadingItem[] = [];
 

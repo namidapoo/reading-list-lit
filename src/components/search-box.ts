@@ -1,8 +1,108 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 @customElement("search-box")
 export class SearchBox extends LitElement {
+	static override styles = css`
+		:host {
+			display: block;
+			width: 100%;
+		}
+
+		.search-container {
+			position: relative;
+			display: flex;
+			align-items: center;
+		}
+
+		.search-icon {
+			position: absolute;
+			left: 12px;
+			width: 18px;
+			height: 18px;
+			color: #999;
+			pointer-events: none;
+		}
+
+		input {
+			font-size: inherit;
+			font-family: inherit;
+			border: 1px solid #eee;
+			border-radius: 0.25rem;
+			padding: 0.5rem 2rem 0.5rem 2.5rem;
+			background: transparent;
+			width: 100%;
+			margin: 0;
+			color: inherit;
+			transition: border-color 0.2s ease;
+		}
+
+		input:focus {
+			outline: 3px solid lightblue;
+			border-color: #66cc98;
+		}
+
+		input[type='search'] {
+			-webkit-appearance: textfield;
+		}
+
+		input[type='search']::-webkit-search-cancel-button,
+		input[type='search']::-webkit-search-decoration {
+			-webkit-appearance: none;
+		}
+
+		.clear-button {
+			position: absolute;
+			right: 8px;
+			width: 24px;
+			height: 24px;
+			border: none;
+			background: transparent;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #999;
+			padding: 0;
+			border-radius: 50%;
+			transition: all 0.2s ease;
+		}
+
+		.clear-button:hover {
+			background: #f0f0f0;
+			color: #666;
+		}
+
+		.clear-button:focus-visible {
+			outline: 3px solid lightblue;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			input {
+				background: #181a20;
+				color: #e0e0e0;
+				border-color: #444;
+			}
+
+			input:focus {
+				border-color: #66cc98;
+			}
+
+			.search-icon {
+				color: #666;
+			}
+
+			.clear-button {
+				color: #666;
+			}
+
+			.clear-button:hover {
+				background: #2c313a;
+				color: #999;
+			}
+		}
+	`;
+
 	@property({ type: String })
 	value = "";
 

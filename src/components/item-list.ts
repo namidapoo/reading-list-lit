@@ -1,10 +1,103 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { ReadingItem } from "../types";
 import "./reading-item";
 
 @customElement("item-list")
 export class ItemList extends LitElement {
+	static override styles = css`
+		:host {
+			display: block;
+			width: 100%;
+		}
+
+		.item-list-container {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			padding: 0 0.05rem;
+		}
+
+		.empty-state,
+		.loading-state,
+		.error-state {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 3rem 1.5rem;
+			text-align: center;
+			color: #666;
+		}
+
+		.empty-icon,
+		.error-icon {
+			width: 48px;
+			height: 48px;
+			margin-bottom: 1rem;
+			opacity: 0.5;
+		}
+
+		.loading-spinner {
+			width: 32px;
+			height: 32px;
+			border: 3px solid #f3f3f3;
+			border-top: 3px solid #66cc98;
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+			margin-bottom: 1rem;
+		}
+
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+
+		.loading-text {
+			font-size: 0.9rem;
+			color: #999;
+		}
+
+		h3 {
+			margin: 0 0 0.5rem 0;
+			font-size: 1.2rem;
+			font-weight: 600;
+			color: #333;
+		}
+
+		p {
+			margin: 0;
+			font-size: 0.9rem;
+			line-height: 1.5;
+		}
+
+		.empty-help {
+			color: #999;
+			max-width: 300px;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			.empty-state,
+			.loading-state,
+			.error-state {
+				color: #ccc;
+			}
+
+			h3 {
+				color: #e0e0e0;
+			}
+
+			.empty-help {
+				color: #888;
+			}
+
+			.loading-spinner {
+				border-color: #333;
+				border-top-color: #66cc98;
+			}
+		}
+	`;
+
 	@property({ type: Array })
 	items: ReadingItem[] = [];
 
