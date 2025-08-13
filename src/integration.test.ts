@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ReadingListStorage } from "./storage";
+import { ReadingListStorage } from "./lib/storage";
 import type { ReadingItem } from "./types";
 
 // Chrome APIのモック

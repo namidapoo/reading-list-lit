@@ -7,10 +7,10 @@
 	"action": {
 		"default_popup": "popup.html",
 		"default_icon": {
-			"16": "16.png",
-			"32": "32.png",
-			"48": "48.png",
-			"128": "128.png"
+			"16": "icons/16.png",
+			"32": "icons/32.png",
+			"48": "icons/48.png",
+			"128": "icons/128.png"
 		}
 	},
 	"background": {
@@ -18,10 +18,10 @@
 		"type": "module"
 	},
 	"icons": {
-		"16": "16.png",
-		"32": "32.png",
-		"48": "48.png",
-		"128": "128.png"
+		"16": "icons/16.png",
+		"32": "icons/32.png",
+		"48": "icons/48.png",
+		"128": "icons/128.png"
 	},
 	"content_security_policy": {
 		"extension_pages": "script-src 'self'; object-src 'none'"

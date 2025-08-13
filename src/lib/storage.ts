@@ -1,5 +1,5 @@
-import type { ReadingItem } from "./types";
-import { ErrorCode, ReadingListError } from "./types";
+import type { ReadingItem } from "../types";
+import { ErrorCode, ReadingListError } from "../types";
 
 const STORAGE_KEY = "items";
 const MAX_ITEMS = 512;

@@ -1,5 +1,5 @@
-import "./styles/globals.css";
-import "./popup-component";
+import "../../src/styles/globals.css";
+import "../../src/popup/app";
 
 // アプリケーションをマウント
 document.addEventListener("DOMContentLoaded", () => {

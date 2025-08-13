@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ReadingItem } from "../types";
 import { ReadingListStorage } from "./storage";
-import type { ReadingItem } from "./types";
 
 // Chrome API のモック
 const mockChromeStorage = {
