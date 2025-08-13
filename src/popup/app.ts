@@ -232,9 +232,6 @@ export class ReadingListPopup extends LitElement {
 	@state()
 	private error = "";
 
-	@state()
-	private successMessage = "";
-
 	storage: ReadingListStorage;
 
 	constructor() {
@@ -289,7 +286,6 @@ export class ReadingListPopup extends LitElement {
 		try {
 			this.adding = true;
 			this.error = "";
-			this.successMessage = "";
 
 			// Get current tab
 			const [tab] = await chrome.tabs.query({
@@ -313,14 +309,8 @@ export class ReadingListPopup extends LitElement {
 			}
 
 			await this.storage.addItem(tab.url, tab.title);
-			this.successMessage = "Page added successfully";
 			this.error = "";
 			await this.loadItems();
-
-			// Clear success message after 3 seconds
-			setTimeout(() => {
-				this.successMessage = "";
-			}, 3000);
 		} catch (error) {
 			if (error instanceof Error) {
 				if (error.message.includes("Storage limit")) {
@@ -375,7 +365,6 @@ export class ReadingListPopup extends LitElement {
 		} catch (error) {
 			console.error("Failed to delete item:", error);
 			this.error = "Failed to delete item";
-			this.successMessage = "";
 		}
 	}
 
@@ -432,11 +421,7 @@ export class ReadingListPopup extends LitElement {
 						`
 						: ""
 				}
-				${
-					this.successMessage
-						? html`<div class="success-message">${this.successMessage}</div>`
-						: ""
-				}
+
 
 				<div class="search-container">
 					<search-box
