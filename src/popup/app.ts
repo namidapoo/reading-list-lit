@@ -178,7 +178,7 @@ export class ReadingListPopup extends LitElement {
 		}
 
 		error-message {
-			margin: 0;
+			margin: 0 0 8px 0;
 		}
 
 		@media (prefers-color-scheme: dark) {

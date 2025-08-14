@@ -15,9 +15,9 @@ export class ErrorMessage extends LitElement {
 		.error-container {
 			display: flex;
 			align-items: center;
-			gap: 0;
-			padding: 0;
-			border-radius: 0;
+			gap: 12px;
+			padding: 12px;
+			border-radius: 4px;
 			animation: slideDown 0.25s ease-out;
 			position: relative;
 		}
@@ -68,8 +68,8 @@ export class ErrorMessage extends LitElement {
 		}
 
 		.icon {
-			width: 20px;
-			height: 20px;
+			width: 18px;
+			height: 18px;
 			flex-shrink: 0;
 			display: flex;
 			align-items: center;
@@ -77,8 +77,8 @@ export class ErrorMessage extends LitElement {
 		}
 
 		.icon svg {
-			width: 20px;
-			height: 20px;
+			width: 16px;
+			height: 16px;
 		}
 
 		.content {
@@ -89,25 +89,25 @@ export class ErrorMessage extends LitElement {
 		.message {
 			font-weight: 500;
 			font-size: 0.9rem;
-			line-height: 1;
+			line-height: 1.3;
 		}
 
 		.description {
-			margin-top: 0;
+			margin-top: 4px;
 			font-size: 0.85rem;
 			opacity: 0.8;
-			line-height: 1;
+			line-height: 1.3;
 		}
 
 		.actions {
-			margin-top: 0;
+			margin-top: 8px;
 		}
 
 		.retry-button {
-			padding: 0;
+			padding: 4px 12px;
 			background: white;
 			border: 1px solid currentColor;
-			border-radius: 0;
+			border-radius: 4px;
 			font-size: 0.85rem;
 			cursor: pointer;
 			color: inherit;
@@ -127,8 +127,8 @@ export class ErrorMessage extends LitElement {
 		.close-button {
 			position: relative;
 			margin-left: auto;
-			width: 24px;
-			height: 24px;
+			width: 20px;
+			height: 20px;
 			border: none;
 			background: transparent;
 			cursor: pointer;
@@ -138,28 +138,20 @@ export class ErrorMessage extends LitElement {
 			color: inherit;
 			opacity: 0.6;
 			padding: 0;
-			border-radius: 0;
+			border-radius: 4px;
 			transition: all 0.2s ease;
 		}
 
 		.close-button:hover {
 			opacity: 1;
-			background: rgba(0, 0, 0, 0.1);
+			color: #ff6b6b;
 		}
 
 		.close-button:focus-visible {
 			outline: 3px solid lightblue;
 		}
 
-		.close-button span {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 100%;
-			height: 100%;
-		}
-
-		.close-button span svg {
+		.close-button svg {
 			width: 14px;
 			height: 14px;
 		}
@@ -188,7 +180,7 @@ export class ErrorMessage extends LitElement {
 			}
 
 			.close-button:hover {
-				background: rgba(255, 255, 255, 0.1);
+				color: #ff9999;
 			}
 		}
 	`;
