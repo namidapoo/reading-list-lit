@@ -29,7 +29,6 @@ export class ReadingListPopup extends LitElement {
 			font-size: var(--base-font-size);
 			line-height: var(--base-line-height);
 			width: var(--container-width);
-			min-height: 400px;
 			max-height: 600px;
 			background: #fff;
 		}
@@ -47,7 +46,6 @@ export class ReadingListPopup extends LitElement {
 		.container {
 			display: flex;
 			flex-direction: column;
-			height: 100%;
 			padding: 0 1rem;
 		}
 
@@ -153,8 +151,8 @@ export class ReadingListPopup extends LitElement {
 		}
 
 		.content {
-			flex: 1;
 			overflow-y: auto;
+			max-height: calc(600px - 120px);
 			padding: 0.75rem 0;
 			background: #fff;
 		}
@@ -175,7 +173,6 @@ export class ReadingListPopup extends LitElement {
 			.container {
 			display: flex;
 			flex-direction: column;
-			height: 100%;
 			padding: 0 1rem;
 		}
 
@@ -202,8 +199,8 @@ export class ReadingListPopup extends LitElement {
 		}
 
 			.content {
-			flex: 1;
 			overflow-y: auto;
+			max-height: calc(600px - 120px);
 			padding: 0.75rem 0;
 			background: #fff;
 		}

@@ -26,7 +26,7 @@ export class ItemList extends LitElement {
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			padding: 3rem 1.5rem;
+			padding: 2rem 1.5rem;
 			text-align: center;
 			color: #666;
 		}
