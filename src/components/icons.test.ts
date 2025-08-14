@@ -4,7 +4,6 @@ import {
 	earthIcon,
 	octagonAlertIcon,
 	searchIcon,
-	smileIcon,
 	trashIcon,
 	xIcon,
 } from "./icons";
@@ -74,21 +73,6 @@ describe("Icons", () => {
 		});
 	});
 
-	describe("smileIcon", () => {
-		it("デフォルトの色でSVGテンプレートを返す", () => {
-			const result = smileIcon();
-			expect(result).toBeDefined();
-			expect(result.strings).toBeDefined();
-			expect(result.values).toHaveLength(1);
-			expect(result.values[0]).toBe("currentColor");
-		});
-
-		it("カスタム色を適用できる", () => {
-			const result = smileIcon("#FFFF00");
-			expect(result.values[0]).toBe("#FFFF00");
-		});
-	});
-
 	describe("trashIcon", () => {
 		it("デフォルトの色でSVGテンプレートを返す", () => {
 			const result = trashIcon();
@@ -126,7 +110,6 @@ describe("Icons", () => {
 				earthIcon(),
 				octagonAlertIcon(),
 				searchIcon(),
-				smileIcon(),
 				trashIcon(),
 				xIcon(),
 			];
@@ -144,7 +127,6 @@ describe("Icons", () => {
 				earthIcon(),
 				octagonAlertIcon(),
 				searchIcon(),
-				smileIcon(),
 				trashIcon(),
 				xIcon(),
 			];

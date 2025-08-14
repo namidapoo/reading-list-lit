@@ -15,9 +15,9 @@ export class ErrorMessage extends LitElement {
 		.error-container {
 			display: flex;
 			align-items: center;
-			gap: 0.75rem;
-			padding: 0.75rem;
-			border-radius: 0.5rem;
+			gap: 0;
+			padding: 0;
+			border-radius: 0;
 			animation: slideDown 0.25s ease-out;
 			position: relative;
 		}
@@ -89,25 +89,25 @@ export class ErrorMessage extends LitElement {
 		.message {
 			font-weight: 500;
 			font-size: 0.9rem;
-			line-height: 1.4;
+			line-height: 1;
 		}
 
 		.description {
-			margin-top: 0.25rem;
+			margin-top: 0;
 			font-size: 0.85rem;
 			opacity: 0.8;
-			line-height: 1.4;
+			line-height: 1;
 		}
 
 		.actions {
-			margin-top: 0.5rem;
+			margin-top: 0;
 		}
 
 		.retry-button {
-			padding: 0.25rem 0.75rem;
+			padding: 0;
 			background: white;
 			border: 1px solid currentColor;
-			border-radius: 0.25rem;
+			border-radius: 0;
 			font-size: 0.85rem;
 			cursor: pointer;
 			color: inherit;
@@ -138,7 +138,7 @@ export class ErrorMessage extends LitElement {
 			color: inherit;
 			opacity: 0.6;
 			padding: 0;
-			border-radius: 50%;
+			border-radius: 0;
 			transition: all 0.2s ease;
 		}
 

@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { ReadingItem } from "../types";
-import { octagonAlertIcon, smileIcon } from "./icons";
+import { octagonAlertIcon } from "./icons";
 import "./reading-item";
 
 @customElement("item-list")
@@ -15,8 +15,8 @@ export class ItemList extends LitElement {
 		.item-list-container {
 			display: flex;
 			flex-direction: column;
-			gap: 0.5rem;
-			padding: 0 0.05rem;
+			gap: 8px;
+			padding: 0;
 		}
 
 		.empty-state,
@@ -26,34 +26,24 @@ export class ItemList extends LitElement {
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			padding: 2rem 1.5rem;
+			padding: 20px 0;
 			text-align: center;
 			color: #666;
 		}
 
-		.empty-icon {
-			width: 64px;
-			height: 64px;
-			margin-bottom: 1rem;
-			opacity: 0.5;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+		.empty-text {
+			font-size: 0.9rem;
+			color: #999;
 		}
 
 		.error-icon {
 			width: 48px;
 			height: 48px;
-			margin-bottom: 1rem;
+			margin-bottom: 0;
 			opacity: 0.5;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-		}
-
-		.empty-icon svg {
-			width: 48px;
-			height: 48px;
 		}
 
 		.error-icon svg {
@@ -66,9 +56,9 @@ export class ItemList extends LitElement {
 			height: 32px;
 			border: 3px solid #f3f3f3;
 			border-top: 3px solid #3EA8FF;
-			border-radius: 50%;
+			border-radius: 0;
 			animation: spin 1s linear infinite;
-			margin-bottom: 1rem;
+			margin-bottom: 0;
 		}
 
 		@keyframes spin {
@@ -82,7 +72,7 @@ export class ItemList extends LitElement {
 		}
 
 		h3 {
-			margin: 0 0 0.5rem 0;
+			margin: 0;
 			font-size: 1.2rem;
 			font-weight: 600;
 			color: #333;
@@ -91,13 +81,9 @@ export class ItemList extends LitElement {
 		p {
 			margin: 0;
 			font-size: 0.9rem;
-			line-height: 1.5;
+			line-height: 1;
 		}
 
-		.empty-help {
-			color: #999;
-			max-width: 300px;
-		}
 
 		@media (prefers-color-scheme: dark) {
 			.empty-state,
@@ -110,7 +96,7 @@ export class ItemList extends LitElement {
 				color: #e0e0e0;
 			}
 
-			.empty-help {
+			.empty-text {
 				color: #888;
 			}
 
@@ -133,11 +119,7 @@ export class ItemList extends LitElement {
 	private renderEmpty() {
 		return html`
 			<div class="empty-state">
-				<span class="empty-icon">${smileIcon()}</span>
-				<h3>No saved items yet</h3>
-				<p class="empty-help">
-					Save pages to read later using the + button or right-click menu
-				</p>
+				<p class="empty-text">No items</p>
 			</div>
 		`;
 	}

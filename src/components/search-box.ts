@@ -11,16 +11,18 @@ export class SearchBox extends LitElement {
 		}
 
 		.search-container {
-			position: relative;
 			display: flex;
 			align-items: center;
+			gap: 8px;
+			border: 1px solid #eee;
+			border-radius: 4px;
+			padding: 0 12px;
+			background: #fff;
+			transition: border-color 0.2s ease;
 		}
 
 		.search-icon {
-			position: absolute;
-			left: 12px;
-			top: 50%;
-			transform: translateY(-50%);
+			flex-shrink: 0;
 			width: 18px;
 			height: 18px;
 			color: #999;
@@ -35,21 +37,20 @@ export class SearchBox extends LitElement {
 		}
 
 		input {
+			flex: 1;
 			font-size: inherit;
 			font-family: inherit;
-			border: 1px solid #eee;
-			border-radius: 0.25rem;
-			padding: 0.5rem 2rem 0.5rem 2.5rem;
+			border: none;
+			padding: 8px 0;
 			background: transparent;
-			width: 100%;
 			margin: 0;
 			color: inherit;
-			transition: border-color 0.2s ease;
+			outline: none;
 		}
 
-		input:focus {
-			outline: 3px solid lightblue;
+		.search-container:focus-within {
 			border-color: #3EA8FF;
+			box-shadow: 0 0 0 2px rgba(62, 168, 255, 0.25);
 		}
 
 		input[type='search'] {
@@ -62,10 +63,7 @@ export class SearchBox extends LitElement {
 		}
 
 		.clear-button {
-			position: absolute;
-			right: 10px;
-			top: 50%;
-			transform: translateY(-50%);
+			flex-shrink: 0;
 			width: 20px;
 			height: 20px;
 			border: none;
@@ -93,14 +91,18 @@ export class SearchBox extends LitElement {
 		}
 
 		@media (prefers-color-scheme: dark) {
-			input {
+			.search-container {
 				background: #181a20;
-				color: #e0e0e0;
 				border-color: #444;
 			}
 
-			input:focus {
+			.search-container:focus-within {
 				border-color: #3EA8FF;
+			}
+
+			input {
+				background: transparent;
+				color: #e0e0e0;
 			}
 
 			.search-icon {

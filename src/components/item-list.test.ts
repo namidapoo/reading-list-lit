@@ -50,26 +50,7 @@ describe("ItemList", () => {
 
 			const emptyMessage = itemList.shadowRoot?.querySelector(".empty-state");
 			expect(emptyMessage).toBeTruthy();
-			expect(emptyMessage?.textContent).toContain("No saved items yet");
-		});
-
-		it("空状態でアイコンが表示される", async () => {
-			itemList.items = [];
-			await itemList.updateComplete;
-
-			const icon = itemList.shadowRoot?.querySelector(".empty-icon");
-			expect(icon).toBeTruthy();
-		});
-
-		it("空状態でヘルプテキストが表示される", async () => {
-			itemList.items = [];
-			await itemList.updateComplete;
-
-			const helpText = itemList.shadowRoot?.querySelector(".empty-help");
-			expect(helpText).toBeTruthy();
-			expect(helpText?.textContent).toContain(
-				"Save pages to read later using the + button or right-click menu",
-			);
+			expect(emptyMessage?.textContent).toContain("No items");
 		});
 	});
 

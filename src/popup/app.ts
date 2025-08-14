@@ -14,7 +14,7 @@ export class ReadingListPopup extends LitElement {
 			--base-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 				Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 			--base-font-size: 13px;
-			--base-line-height: 1.4;
+			--base-line-height: 1;
 			--container-width: 360px;
 			--spacer: 15px;
 			--rl-bg-color: #f7f7f7;
@@ -31,6 +31,7 @@ export class ReadingListPopup extends LitElement {
 			width: var(--container-width);
 			max-height: 600px;
 			background: #fff;
+			overflow-y: auto;
 		}
 
 		*,
@@ -46,14 +47,35 @@ export class ReadingListPopup extends LitElement {
 		.container {
 			display: flex;
 			flex-direction: column;
-			padding: 0 1rem;
+			padding: 8px;
+		}
+
+		.sticky-header {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			padding-bottom: 8px;
+			position: sticky;
+			top: 8px;
+			z-index: 10;
+			background: #fff;
+		}
+
+		.sticky-header::before {
+			content: '';
+			position: absolute;
+			top: -8px;
+			left: 0;
+			right: 0;
+			height: 8px;
+			background: inherit;
+			z-index: -1;
 		}
 
 		.header {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			padding: 0 0 0.5rem 0;
 			background: #fff;
 		}
 
@@ -67,15 +89,15 @@ export class ReadingListPopup extends LitElement {
 		.header-actions {
 			display: flex;
 			align-items: center;
-			gap: 0.75rem;
+			gap: 8px;
 		}
 
 		.item-count {
 			font-size: 0.75rem;
 			color: #666;
-			padding: 0.25rem 0.5rem;
+			padding: 4px 8px;
 			background: #f0f0f0;
-			border-radius: 0.25rem;
+			border-radius: 4px;
 		}
 
 		.add-button {
@@ -124,12 +146,12 @@ export class ReadingListPopup extends LitElement {
 		}
 
 		.success-message {
-			padding: 0.75rem 0;
+			padding: 0;
 			background: #d4edda;
 			color: #155724;
 			border: 1px solid #c3e6cb;
-			border-radius: 0.25rem;
-			margin: 0.5rem 0;
+			border-radius: 0;
+			margin: 0;
 			font-size: 0.9rem;
 			animation: slideDown 0.25s ease-out;
 		}
@@ -146,19 +168,17 @@ export class ReadingListPopup extends LitElement {
 		}
 
 		.search-container {
-			padding: 0.25rem 0;
-			background: transparent;
+			padding: 0;
+			background: #fff;
 		}
 
 		.content {
-			overflow-y: auto;
-			max-height: calc(600px - 120px);
-			padding: 0.75rem 0;
+			padding: 0;
 			background: #fff;
 		}
 
 		error-message {
-			margin: 0.5rem 0;
+			margin: 0;
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -170,19 +190,13 @@ export class ReadingListPopup extends LitElement {
 				background: #181a20;
 			}
 
-			.container {
-			display: flex;
-			flex-direction: column;
-			padding: 0 1rem;
-		}
+			.sticky-header {
+				background: #181a20;
+			}
 
 			.header {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0 0 0.5rem 0;
-			background: #fff;
-		}
+				background: #181a20;
+			}
 
 			.header-title {
 				color: #e0e0e0;
@@ -194,27 +208,12 @@ export class ReadingListPopup extends LitElement {
 			}
 
 			.search-container {
-			padding: 0.25rem 0;
-			background: transparent;
-		}
+				background: #181a20;
+			}
 
 			.content {
-			overflow-y: auto;
-			max-height: calc(600px - 120px);
-			padding: 0.75rem 0;
-			background: #fff;
-		}
-
-			.success-message {
-			padding: 0.75rem 0;
-			background: #d4edda;
-			color: #155724;
-			border: 1px solid #c3e6cb;
-			border-radius: 0.25rem;
-			margin: 0.5rem 0;
-			font-size: 0.9rem;
-			animation: slideDown 0.25s ease-out;
-		}
+				background: #181a20;
+			}
 		}
 	`;
 
@@ -380,23 +379,32 @@ export class ReadingListPopup extends LitElement {
 	override render() {
 		return html`
 			<div class="container">
-				<header class="header">
-					<h1 class="header-title">Reading List</h1>
-					<div class="header-actions">
-						<span class="item-count">
-							${this.itemCount} ${this.itemCount === 1 ? "item" : "items"}
-						</span>
-						<button
-							class="add-button ${this.adding ? "loading" : ""}"
-							@click=${this.handleAddCurrentPage}
-							?disabled=${this.adding}
-							aria-label="Add current page"
-							title="Add current page to reading list"
-						>
-							${circlePlusIcon()}
-						</button>
+				<div class="sticky-header">
+					<header class="header">
+						<h1 class="header-title">Reading List</h1>
+						<div class="header-actions">
+							<span class="item-count">
+								${this.itemCount} ${this.itemCount === 1 ? "item" : "items"}
+							</span>
+							<button
+								class="add-button ${this.adding ? "loading" : ""}"
+								@click=${this.handleAddCurrentPage}
+								?disabled=${this.adding}
+								aria-label="Add current page"
+								title="Add current page to reading list"
+							>
+								${circlePlusIcon()}
+							</button>
+						</div>
+					</header>
+
+					<div class="search-container">
+						<search-box
+							@search-changed=${this.handleSearch}
+							.value=${this.searchQuery}
+						></search-box>
 					</div>
-				</header>
+				</div>
 
 				${
 					this.error
@@ -418,14 +426,6 @@ export class ReadingListPopup extends LitElement {
 						`
 						: ""
 				}
-
-
-				<div class="search-container">
-					<search-box
-						@search-changed=${this.handleSearch}
-						.value=${this.searchQuery}
-					></search-box>
-				</div>
 
 				<div class="content">
 					<item-list

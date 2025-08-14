@@ -37,19 +37,17 @@ export class ReadingItemElement extends LitElement {
 
 		.item-container {
 			border-radius: 4px;
-			padding: 0;
+			padding: 12px;
 			margin: 0;
-			position: relative;
-			overflow: hidden;
 			transition: all 0.5s ease 0s;
 			color: var(--rl-link-color);
 			background-color: var(--rl-bg-color);
-			box-shadow: var(--rl-shadow);
+			border: 1px solid rgba(0, 0, 0, 0.08);
 			cursor: pointer;
 			display: flex;
 			align-items: center;
-			padding: 10px 50px 10px 44px;
-			min-height: 56px;
+			gap: 12px;
+			min-height: 0;
 			text-decoration: none;
 		}
 
@@ -64,19 +62,17 @@ export class ReadingItemElement extends LitElement {
 
 		.item-favicon,
 		.default-icon {
-			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
-			left: var(--rl-item-gap);
+			flex-shrink: 0;
 			width: 24px;
 			height: 24px;
 			object-fit: contain;
 		}
 
 		.default-icon {
-			padding: 3px;
+			padding: 0;
 			color: #999;
 			background: #fff;
+			border-radius: 4px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -92,13 +88,11 @@ export class ReadingItemElement extends LitElement {
 			min-width: 0;
 			display: flex;
 			flex-direction: column;
-			justify-content: center;
 		}
 
 		.item-title {
 			display: block;
 			font-weight: bold;
-			margin-bottom: 4px;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -108,7 +102,7 @@ export class ReadingItemElement extends LitElement {
 		.item-meta {
 			display: flex;
 			align-items: baseline;
-			gap: 12px;
+			gap: 8px;
 			font-size: 0.9em;
 			opacity: 0.8;
 		}
@@ -128,18 +122,12 @@ export class ReadingItemElement extends LitElement {
 		}
 
 		.delete-button {
-			position: absolute;
-			text-align: center;
-			font-weight: bold;
-			top: 50%;
-			transform: translateY(-50%);
-			right: 0.5rem;
-			padding: 4px;
+			flex-shrink: 0;
+			padding: 0;
 			width: 32px;
 			height: 32px;
 			border: none;
 			background: transparent;
-			z-index: 2;
 			color: #999;
 			display: flex;
 			align-items: center;
@@ -178,6 +166,7 @@ export class ReadingItemElement extends LitElement {
 			.item-container {
 				background-color: var(--rl-bg-color);
 				color: var(--rl-link-color);
+				border-color: rgba(255, 255, 255, 0.1);
 			}
 
 			.item-container:hover {
@@ -191,19 +180,17 @@ export class ReadingItemElement extends LitElement {
 
 			.item-favicon,
 			.default-icon {
-				position: absolute;
-				top: 50%;
-				transform: translateY(-50%);
-				left: var(--rl-item-gap);
+				flex-shrink: 0;
 				width: 24px;
 				height: 24px;
-				border-radius: 0.25rem;
+				border-radius: 0;
 				object-fit: contain;
 			}
 
 			.default-icon {
 				background: #2c313a;
 				color: #888;
+				border-radius: 4px;
 			}
 
 			.item-time {
