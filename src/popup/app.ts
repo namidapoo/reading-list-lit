@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { circlePlusIcon } from "../components/icons";
 import { ReadingListStorage } from "../lib/storage";
 import type { ReadingItem } from "../types";
 import "../components/search-box";
@@ -60,7 +61,7 @@ export class ReadingListPopup extends LitElement {
 
 		.header-title {
 			margin: 0;
-			font-size: 1.4rem;
+			font-size: 1.2rem;
 			font-weight: 600;
 			color: #333;
 		}
@@ -72,7 +73,7 @@ export class ReadingListPopup extends LitElement {
 		}
 
 		.item-count {
-			font-size: 0.85rem;
+			font-size: 0.75rem;
 			color: #666;
 			padding: 0.25rem 0.5rem;
 			background: #f0f0f0;
@@ -81,13 +82,11 @@ export class ReadingListPopup extends LitElement {
 
 		.add-button {
 			--button-size: 2rem;
-			color: #fff;
-			background: var(--primary-color);
+			background: transparent;
 			width: var(--button-size);
 			height: var(--button-size);
-			font-weight: bold;
 			border: 0;
-			border-radius: 50%;
+			padding: 0;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -96,8 +95,11 @@ export class ReadingListPopup extends LitElement {
 		}
 
 		.add-button:hover:not(:disabled) {
-			background-color: var(--primary-color-focus);
 			transform: scale(1.05);
+		}
+
+		.add-button:hover:not(:disabled) svg circle {
+			fill: var(--primary-color-focus);
 		}
 
 		.add-button:active:not(:disabled) {
@@ -107,6 +109,11 @@ export class ReadingListPopup extends LitElement {
 		.add-button:disabled {
 			opacity: 0.5;
 			cursor: not-allowed;
+		}
+
+		.add-button svg {
+			width: 32px;
+			height: 32px;
 		}
 
 		.add-button.loading svg {
@@ -389,14 +396,7 @@ export class ReadingListPopup extends LitElement {
 							aria-label="Add current page"
 							title="Add current page to reading list"
 						>
-							<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M12 4v16m8-8H4"
-								/>
-							</svg>
+							${circlePlusIcon()}
 						</button>
 					</div>
 				</header>

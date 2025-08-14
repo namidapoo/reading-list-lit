@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { ReadingItem } from "../types";
+import { earthIcon, trashIcon } from "./icons";
 
 @customElement("reading-item")
 export class ReadingItemElement extends LitElement {
@@ -47,13 +48,17 @@ export class ReadingItemElement extends LitElement {
 			cursor: pointer;
 			display: flex;
 			align-items: center;
-			padding: 10px 50px 10px 56px;
+			padding: 10px 50px 10px 44px;
 			min-height: 56px;
 			text-decoration: none;
 		}
 
 		.item-container:hover {
 			background-color: var(--rl-link-hover-bg);
+		}
+
+		.item-container:hover:not(:has(.delete-button:hover)) .item-title,
+		.item-container:hover:not(:has(.delete-button:hover)) .item-url {
 			color: var(--primary-color);
 		}
 
@@ -63,25 +68,31 @@ export class ReadingItemElement extends LitElement {
 			top: 50%;
 			transform: translateY(-50%);
 			left: var(--rl-item-gap);
-			width: 36px;
-			height: 36px;
-			border-radius: 0.25rem;
-			border: 1px solid #ccc;
-			padding: 1px;
+			width: 24px;
+			height: 24px;
 			object-fit: contain;
 		}
 
 		.default-icon {
-			padding: 6px;
+			padding: 3px;
 			color: #999;
 			background: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
-		
+		.default-icon svg {
+			width: 18px;
+			height: 18px;
+		}
 
 		.item-content {
 			flex: 1;
 			min-width: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
 		}
 
 		.item-title {
@@ -97,19 +108,21 @@ export class ReadingItemElement extends LitElement {
 		.item-meta {
 			display: flex;
 			align-items: baseline;
-			gap: 8px;
+			gap: 12px;
 			font-size: 0.9em;
 			opacity: 0.8;
 		}
 
 		.item-url {
+			flex: 0 1 auto;
+			min-width: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
-			max-width: 200px;
 		}
 
 		.item-time {
+			flex: 0 0 auto;
 			white-space: nowrap;
 			color: #999;
 		}
@@ -122,10 +135,9 @@ export class ReadingItemElement extends LitElement {
 			transform: translateY(-50%);
 			right: 0.5rem;
 			padding: 4px;
-			border-radius: 4px;
 			width: 32px;
 			height: 32px;
-			border: 1px solid transparent;
+			border: none;
 			background: transparent;
 			z-index: 2;
 			color: #999;
@@ -133,13 +145,11 @@ export class ReadingItemElement extends LitElement {
 			align-items: center;
 			justify-content: center;
 			cursor: pointer;
-			transition: all 0.2s ease;
+			transition: color 0.2s ease;
 		}
 
 		.delete-button:hover {
 			color: #ff6b6b;
-			background: rgba(255, 107, 107, 0.1);
-			border-color: #ff6b6b;
 		}
 
 		.delete-button:focus-visible {
@@ -147,10 +157,10 @@ export class ReadingItemElement extends LitElement {
 		}
 
 		.delete-button svg {
-			width: 14px;
-			height: 14px;
+			width: 15px;
+			height: 15px;
 			opacity: 0;
-			transition: opacity 0.2s ease;
+			transition: opacity 0.2s ease, color 0.2s ease;
 		}
 
 		.item-container:hover .delete-button svg {
@@ -172,22 +182,24 @@ export class ReadingItemElement extends LitElement {
 
 			.item-container:hover {
 				background-color: var(--rl-link-hover-bg);
+			}
+
+			.item-container:hover:not(:has(.delete-button:hover)) .item-title,
+			.item-container:hover:not(:has(.delete-button:hover)) .item-url {
 				color: var(--primary-color);
 			}
 
 			.item-favicon,
-		.default-icon {
-			position: absolute;
-			top: 50%;
-			transform: translateY(-50%);
-			left: var(--rl-item-gap);
-			width: 36px;
-			height: 36px;
-			border-radius: 0.25rem;
-			border: 1px solid #ccc;
-			padding: 1px;
-			object-fit: contain;
-		}
+			.default-icon {
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				left: var(--rl-item-gap);
+				width: 24px;
+				height: 24px;
+				border-radius: 0.25rem;
+				object-fit: contain;
+			}
 
 			.default-icon {
 				background: #2c313a;
@@ -302,19 +314,7 @@ export class ReadingItemElement extends LitElement {
 				${
 					shouldShowDefaultIcon
 						? html`
-							<svg
-								class="default-icon"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-								/>
-							</svg>
+							<span class="default-icon">${earthIcon()}</span>
 						`
 						: html`
 							<img
@@ -340,14 +340,7 @@ export class ReadingItemElement extends LitElement {
 					aria-label="Delete item"
 					title="Delete item"
 				>
-					<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-						/>
-					</svg>
+					${trashIcon()}
 				</button>
 			</div>
 		`;

@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { octagonAlertIcon, xIcon } from "./icons";
 
 type ErrorType = "error" | "warning" | "info";
 
@@ -70,6 +71,14 @@ export class ErrorMessage extends LitElement {
 			width: 20px;
 			height: 20px;
 			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.icon svg {
+			width: 20px;
+			height: 20px;
 		}
 
 		.content {
@@ -139,8 +148,20 @@ export class ErrorMessage extends LitElement {
 		}
 
 		.close-button:focus-visible {
-			outline: 2px solid currentColor;
-			outline-offset: 2px;
+			outline: 3px solid lightblue;
+		}
+
+		.close-button span {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 100%;
+		}
+
+		.close-button span svg {
+			width: 14px;
+			height: 14px;
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -248,41 +269,8 @@ export class ErrorMessage extends LitElement {
 	}
 
 	private getIcon() {
-		switch (this.type) {
-			case "error":
-				return html`
-					<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-				`;
-			case "warning":
-				return html`
-					<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-						/>
-					</svg>
-				`;
-			case "info":
-				return html`
-					<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-				`;
-		}
+		// すべてのタイプで同じoctagon-alertアイコンを使用
+		return html`<span class="icon">${octagonAlertIcon()}</span>`;
 	}
 
 	private getDescription() {
@@ -331,14 +319,7 @@ export class ErrorMessage extends LitElement {
 							@click=${this.handleClose}
 							aria-label="Close"
 						>
-							<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M6 18L18 6M6 6l12 12"
-								/>
-							</svg>
+							${xIcon()}
 						</button>
 					`
 						: ""

@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { searchIcon, xIcon } from "./icons";
 
 @customElement("search-box")
 export class SearchBox extends LitElement {
@@ -18,10 +19,19 @@ export class SearchBox extends LitElement {
 		.search-icon {
 			position: absolute;
 			left: 12px;
+			top: 50%;
+			transform: translateY(-50%);
 			width: 18px;
 			height: 18px;
 			color: #999;
-			pointer-events: none;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.search-icon svg {
+			width: 16px;
+			height: 16px;
 		}
 
 		input {
@@ -53,9 +63,11 @@ export class SearchBox extends LitElement {
 
 		.clear-button {
 			position: absolute;
-			right: 8px;
-			width: 24px;
-			height: 24px;
+			right: 10px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 20px;
+			height: 20px;
 			border: none;
 			background: transparent;
 			cursor: pointer;
@@ -64,17 +76,20 @@ export class SearchBox extends LitElement {
 			justify-content: center;
 			color: #999;
 			padding: 0;
-			border-radius: 50%;
-			transition: all 0.2s ease;
+			transition: color 0.2s ease;
 		}
 
 		.clear-button:hover {
-			background: #f0f0f0;
-			color: #666;
+			color: #333;
 		}
 
 		.clear-button:focus-visible {
 			outline: 3px solid lightblue;
+		}
+
+		.clear-button svg {
+			width: 14px;
+			height: 14px;
 		}
 
 		@media (prefers-color-scheme: dark) {
@@ -97,8 +112,7 @@ export class SearchBox extends LitElement {
 			}
 
 			.clear-button:hover {
-				background: #2c313a;
-				color: #999;
+				color: #ccc;
 			}
 		}
 	`;
@@ -146,19 +160,7 @@ export class SearchBox extends LitElement {
 	override render() {
 		return html`
 			<div class="search-container">
-				<svg
-					class="search-icon"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-					/>
-				</svg>
+				<span class="search-icon">${searchIcon()}</span>
 				<input
 					type="search"
 					.value=${this.value}
@@ -173,20 +175,7 @@ export class SearchBox extends LitElement {
 								@click=${this.handleClear}
 								aria-label="Clear search"
 							>
-								<svg
-									width="14"
-									height="14"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M6 18L18 6M6 6l12 12"
-									/>
-								</svg>
+								${xIcon()}
 							</button>
 						`
 						: ""

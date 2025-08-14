@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { ReadingItem } from "../types";
+import { octagonAlertIcon, smileIcon } from "./icons";
 import "./reading-item";
 
 @customElement("item-list")
@@ -30,12 +31,34 @@ export class ItemList extends LitElement {
 			color: #666;
 		}
 
-		.empty-icon,
+		.empty-icon {
+			width: 64px;
+			height: 64px;
+			margin-bottom: 1rem;
+			opacity: 0.5;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
 		.error-icon {
 			width: 48px;
 			height: 48px;
 			margin-bottom: 1rem;
 			opacity: 0.5;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.empty-icon svg {
+			width: 48px;
+			height: 48px;
+		}
+
+		.error-icon svg {
+			width: 48px;
+			height: 48px;
 		}
 
 		.loading-spinner {
@@ -110,19 +133,7 @@ export class ItemList extends LitElement {
 	private renderEmpty() {
 		return html`
 			<div class="empty-state">
-				<svg
-					class="empty-icon"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="1.5"
-						d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-					/>
-				</svg>
+				<span class="empty-icon">${smileIcon()}</span>
 				<h3>No saved items yet</h3>
 				<p class="empty-help">
 					Save pages to read later using the + button or right-click menu
@@ -143,14 +154,7 @@ export class ItemList extends LitElement {
 	private renderError() {
 		return html`
 			<div class="error-state">
-				<svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-					/>
-				</svg>
+				<span class="error-icon">${octagonAlertIcon()}</span>
 				<h3>Error</h3>
 				<p>${this.error}</p>
 			</div>
