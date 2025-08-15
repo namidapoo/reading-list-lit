@@ -18,7 +18,8 @@
 		"test:watch": "vitest --watch",
 		"test:list": "vitest list",
 		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage"
+		"test:coverage": "vitest run --coverage",
+		"package": "bun run build && cd dist && zip -r ../reading-list-extension.zip . && cd .. && echo 'Created reading-list-extension.zip'"
 	},
 	"dependencies": {
 		"lit": "^3.3.1"

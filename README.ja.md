@@ -4,7 +4,7 @@
 
 記事やウェブページを後で読むために保存するChrome拡張機能。Lit Web ComponentsとTypeScriptで構築されています。
 
-<img width="3428" height="2324" alt="CleanShot 2025-08-15 at 17 02 35@2x" src="https://github.com/user-attachments/assets/c0c0a1e4-34ef-496f-bc2b-3919b9596da3" />
+![Reading List extension screenshot](https://storage.googleapis.com/zenn-user-upload/5810ad5de647-20250815.png)
 
 ## 機能
 
@@ -66,18 +66,21 @@ bun run build
 
 ## スクリプト
 
-| コマンド                | 説明                         |
-| ----------------------- | ---------------------------- |
-| `bun run build`         | プロダクションビルド         |
-| `bun preview`           | ビルド済みアプリのプレビュー |
-| `bun check`             | フォーマットとリントチェック |
-| `bun format`            | コードフォーマット           |
-| `bun lint`              | リントエラーの確認           |
-| `bun lint:fix`          | リントエラーの自動修正       |
-| `bun check-types`       | TypeScript型チェック         |
-| `bun run test`          | テストを実行                 |
-| `bun run test:watch`    | テストをウォッチモードで実行 |
-| `bun run test:coverage` | カバレッジ付きでテスト実行   |
+| コマンド                | 説明                                |
+| ----------------------- | ----------------------------------- |
+| `bun run build`         | プロダクションビルド                |
+| `bun preview`           | ビルド済みアプリのプレビュー        |
+| `bun check`             | フォーマットとリントチェック        |
+| `bun format`            | コードフォーマット                  |
+| `bun lint`              | リントエラーの確認                  |
+| `bun lint:fix`          | リントエラーの自動修正              |
+| `bun check-types`       | TypeScript型チェック                |
+| `bun run test`          | テストを実行                        |
+| `bun run test:watch`    | テストをウォッチモードで実行        |
+| `bun run test:list`     | 利用可能なテストの一覧を表示        |
+| `bun run test:ui`       | Vitest UIを開く                     |
+| `bun run test:coverage` | カバレッジ付きでテスト実行          |
+| `bun run package`       | ビルドして拡張機能のzipファイル作成 |
 
 ## ライセンス
 
