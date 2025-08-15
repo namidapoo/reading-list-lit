@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./search-box";
-import { searchQueries } from "../../tests/utils/fixtures";
+import { searchQueries } from "@test-utils/fixtures";
 import {
 	cleanupTestContainer,
 	createTestContainer,
 	waitForDebounce,
 	waitForUpdates,
-} from "../../tests/utils/helpers";
+} from "@test-utils/helpers";
 import type { SearchBox } from "./search-box";
 
 describe("SearchBox", () => {

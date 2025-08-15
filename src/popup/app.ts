@@ -1,11 +1,11 @@
+import { circlePlusIcon } from "@components/icons";
+import { ReadingListStorage } from "@lib/storage";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { circlePlusIcon } from "../components/icons";
-import { ReadingListStorage } from "../lib/storage";
-import type { ReadingItem } from "../types";
-import "../components/search-box";
-import "../components/item-list";
-import "../components/error-message";
+import type { ReadingItem } from "@/types";
+import "@components/search-box";
+import "@components/item-list";
+import "@components/error-message";
 
 @customElement("reading-list-popup")
 export class ReadingListPopup extends LitElement {

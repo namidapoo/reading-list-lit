@@ -13,6 +13,15 @@
 		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
 		"noEmit": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@components/*": ["./src/components/*"],
+			"@lib/*": ["./src/lib/*"],
+			"@types/*": ["./src/types/*"],
+			"@popup/*": ["./src/popup/*"],
+			"@test-utils/*": ["./tests/utils/*"]
+		},
 
 		/* Linting */
 		"strict": true,
@@ -25,5 +34,5 @@
 		/* Vitest */
 		"types": ["@vitest/browser/providers/playwright", "chrome"]
 	},
-	"include": ["src"]
+	"include": ["src", "tests", "extension"]
 }

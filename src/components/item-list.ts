@@ -1,6 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import type { ReadingItem } from "../types";
+import type { ReadingItem } from "@/types";
 import { octagonAlertIcon } from "./icons";
 import "./reading-item";
 

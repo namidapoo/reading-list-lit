@@ -10,6 +10,16 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
 	base: "./",
 	publicDir: false,
+	resolve: {
+		alias: {
+			"@": resolve(__dirname, "./src"),
+			"@components": resolve(__dirname, "./src/components"),
+			"@lib": resolve(__dirname, "./src/lib"),
+			"@types": resolve(__dirname, "./src/types"),
+			"@popup": resolve(__dirname, "./src/popup"),
+			"@test-utils": resolve(__dirname, "./tests/utils"),
+		},
+	},
 	build: {
 		outDir: "dist",
 		minify: "esbuild",

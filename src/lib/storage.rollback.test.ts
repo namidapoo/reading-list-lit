@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ReadingItem } from "../types";
+import type { ReadingItem } from "@/types";
 import { ReadingListStorage } from "./storage";
 
 describe("ストレージロールバックのテスト", () => {

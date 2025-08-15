@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import type { ReadingItem } from "../../src/types";
+import type { ReadingItem } from "@/types";
 
 /**
  * DOMテスト用のコンテナ要素を作成

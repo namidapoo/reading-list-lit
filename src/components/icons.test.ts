@@ -1,9 +1,6 @@
+import { cleanupTestContainer, createTestContainer } from "@test-utils/helpers";
 import { render } from "lit";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-	cleanupTestContainer,
-	createTestContainer,
-} from "../../tests/utils/helpers";
 import {
 	circlePlusIcon,
 	earthIcon,

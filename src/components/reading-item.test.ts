@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./reading-item";
-import { createMockItem, fixtures } from "../../tests/utils/fixtures";
+import { createMockItem, fixtures } from "@test-utils/fixtures";
 import {
 	cleanupTestContainer,
 	createTestContainer,
 	waitForUpdates,
-} from "../../tests/utils/helpers";
-import type { ReadingItem } from "../types";
+} from "@test-utils/helpers";
+import type { ReadingItem } from "@/types";
 import type { ReadingItemElement } from "./reading-item";
 
 describe("ReadingItem", () => {

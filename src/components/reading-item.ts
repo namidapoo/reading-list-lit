@@ -1,6 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import type { ReadingItem } from "../types";
+import type { ReadingItem } from "@/types";
 import { earthIcon, trashIcon } from "./icons";
 
 @customElement("reading-item")

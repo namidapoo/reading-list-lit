@@ -4,7 +4,7 @@ import {
 	cleanupTestContainer,
 	createTestContainer,
 	waitForUpdates,
-} from "../../tests/utils/helpers";
+} from "@test-utils/helpers";
 import type { ErrorMessage } from "./error-message";
 
 describe("ErrorMessage", () => {

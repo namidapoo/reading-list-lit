@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./reading-item";
-import { createMockItem, fixtures } from "../../tests/utils/fixtures";
+import { createMockItem, fixtures } from "@test-utils/fixtures";
 import {
 	cleanupTestContainer,
 	createTestContainer,
 	waitForUpdates,
-} from "../../tests/utils/helpers";
+} from "@test-utils/helpers";
 import type { ReadingItemElement } from "./reading-item";
 
 describe("ReadingItemコンポーネントのXSS対策", () => {

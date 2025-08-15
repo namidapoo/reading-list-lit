@@ -1,4 +1,4 @@
-import "../../src/popup/app";
+import "@popup/app";
 
 // アプリケーションをマウント
 document.addEventListener("DOMContentLoaded", () => {

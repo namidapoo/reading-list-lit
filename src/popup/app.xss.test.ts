@@ -4,7 +4,7 @@ import {
 	cleanupTestContainer,
 	createTestContainer,
 	waitForUpdates,
-} from "../../tests/utils/helpers";
+} from "@test-utils/helpers";
 import type { ReadingListPopup } from "./app";
 
 describe("検索ボックスのXSS対策", () => {

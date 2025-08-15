@@ -1,4 +1,4 @@
-import { BackgroundService } from "../../src/lib/background-service";
+import { BackgroundService } from "@lib/background-service";
 
 const backgroundService = new BackgroundService();
 

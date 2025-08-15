@@ -1,4 +1,4 @@
-import type { ReadingItem } from "../../src/types";
+import type { ReadingItem } from "@/types";
 
 /**
  * 基本的なReadingItemを生成

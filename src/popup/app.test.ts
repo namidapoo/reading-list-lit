@@ -1,18 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import "../components/search-box";
-import "../components/item-list";
-import type { ItemList } from "../components/item-list";
+import "@components/search-box";
+import "@components/item-list";
+import type { ItemList } from "@components/item-list";
 import "./app";
-import { createMockItems } from "../../tests/utils/fixtures";
+import { createMockItems } from "@test-utils/fixtures";
 import {
 	cleanupTestContainer,
 	createTestContainer,
 	waitForUpdates,
-} from "../../tests/utils/helpers";
+} from "@test-utils/helpers";
 import type { ReadingListPopup } from "./app";
 
 // モックStorageクラス
-vi.mock("../lib/storage", () => {
+vi.mock("@lib/storage", () => {
 	return {
 		ReadingListStorage: vi.fn().mockImplementation(() => ({
 			getItems: vi.fn().mockResolvedValue([]),

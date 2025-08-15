@@ -1,7 +1,7 @@
+import { ReadingListStorage } from "@lib/storage";
+import { createFullChromeMock, setupGlobalChrome } from "@test-utils/helpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ReadingListStorage } from "../../src/lib/storage";
-import type { ReadingItem } from "../../src/types";
-import { createFullChromeMock, setupGlobalChrome } from "../utils/helpers";
+import type { ReadingItem } from "@/types";
 
 // Chrome APIのモック
 const mockChrome = createFullChromeMock();
