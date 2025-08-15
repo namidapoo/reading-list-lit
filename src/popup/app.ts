@@ -236,6 +236,7 @@ export class ReadingListPopup extends LitElement {
 	private error = "";
 
 	storage: ReadingListStorage;
+	private storageListener?: () => void;
 
 	constructor() {
 		super();
@@ -250,14 +251,21 @@ export class ReadingListPopup extends LitElement {
 
 	override disconnectedCallback() {
 		super.disconnectedCallback();
-		// Cleanup if needed
+		// Cleanup storage listener to prevent memory leaks
+		if (this.storageListener) {
+			chrome.storage.sync.onChanged.removeListener(this.storageListener);
+			this.storageListener = undefined;
+		}
+		// Cleanup storage instance
+		this.storage.cleanup();
 	}
 
 	private setupStorageListener() {
 		// Listen for storage changes from other sources
-		chrome.storage.sync.onChanged.addListener(() => {
+		this.storageListener = () => {
 			this.loadItems(false); // Not initial load
-		});
+		};
+		chrome.storage.sync.onChanged.addListener(this.storageListener);
 	}
 
 	async loadItems(isInitialLoad = false) {

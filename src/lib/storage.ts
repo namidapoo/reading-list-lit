@@ -7,14 +7,18 @@ const MAX_TITLE_LENGTH = 255;
 
 export class ReadingListStorage {
 	private cache: ReadingItem[] | null = null;
+	private storageListener?: (changes: {
+		[key: string]: chrome.storage.StorageChange;
+	}) => void;
 
 	constructor() {
 		// ストレージ変更の監視
-		chrome.storage.sync.onChanged.addListener((changes) => {
+		this.storageListener = (changes) => {
 			if (changes[STORAGE_KEY]) {
 				this.cache = null; // キャッシュをクリア
 			}
-		});
+		};
+		chrome.storage.sync.onChanged.addListener(this.storageListener);
 	}
 
 	async addItem(url: string, title: string): Promise<ReadingItem> {
@@ -161,5 +165,14 @@ export class ReadingListStorage {
 
 	private sortByAddedAt(items: ReadingItem[]): ReadingItem[] {
 		return [...items].sort((a, b) => b.addedAt - a.addedAt);
+	}
+
+	cleanup() {
+		// リスナーを削除してメモリリークを防ぐ
+		if (this.storageListener) {
+			chrome.storage.sync.onChanged.removeListener(this.storageListener);
+			this.storageListener = undefined;
+		}
+		this.cache = null;
 	}
 }

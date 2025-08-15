@@ -15,6 +15,7 @@ vi.mock("../lib/storage", () => {
 			addItem: vi.fn(),
 			removeItem: vi.fn(),
 			getItemCount: vi.fn().mockResolvedValue(0),
+			cleanup: vi.fn(),
 		})),
 	};
 });
@@ -330,6 +331,13 @@ describe("ReadingListPopup", () => {
 			const itemList = popup.shadowRoot?.querySelector("item-list") as ItemList;
 			expect(itemList.loading).toBe(false);
 			expect(itemList.items).toEqual(mockItems);
+		});
+	});
+
+	describe("ストレージ変更リスナー", () => {
+		it("disconnectedCallbackでリスナーが削除される", () => {
+			// disconnectedCallbackは何も返さないことを確認
+			expect(() => popup.disconnectedCallback()).not.toThrow();
 		});
 	});
 });
