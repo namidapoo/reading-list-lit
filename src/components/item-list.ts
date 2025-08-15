@@ -84,7 +84,7 @@ export class ItemList extends LitElement {
 			line-height: 1;
 		}
 
-		/* スクリーンリーダー専用のスタイル */
+		/* Screen reader only styles */
 		.sr-only {
 			position: absolute;
 			width: 1px;

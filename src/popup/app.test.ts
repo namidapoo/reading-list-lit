@@ -11,7 +11,7 @@ import {
 } from "@test-utils/helpers";
 import type { ReadingListPopup } from "./app";
 
-// モックStorageクラス
+// Mock Storage class
 vi.mock("@lib/storage", () => {
 	return {
 		ReadingListStorage: vi.fn().mockImplementation(() => ({
@@ -25,7 +25,7 @@ vi.mock("@lib/storage", () => {
 	};
 });
 
-// Chrome APIのモック
+// Chrome API mock
 const mockChrome = {
 	tabs: {
 		query: vi.fn(),
@@ -67,13 +67,13 @@ describe("ReadingListPopup", () => {
 		cleanupTestContainer(container);
 	});
 
-	describe("ヘッダー表示", () => {
-		it("タイトルが表示される", () => {
+	describe("Header display", () => {
+		it("displays title", () => {
 			const title = popup.shadowRoot?.querySelector(".header-title");
 			expect(title?.textContent).toBe("Reading List");
 		});
 
-		it("アイテム数が表示される", async () => {
+		it("displays item count", async () => {
 			popup.storage.getItemCount = vi.fn().mockResolvedValue(5);
 			await popup.loadItems();
 			await popup.updateComplete;
@@ -82,15 +82,15 @@ describe("ReadingListPopup", () => {
 			expect(count?.textContent?.trim()).toBe("5 items");
 		});
 
-		it("追加ボタンが表示される", () => {
+		it("displays add button", () => {
 			const addButton = popup.shadowRoot?.querySelector(".add-button");
 			expect(addButton).toBeTruthy();
 			expect(addButton?.getAttribute("aria-label")).toBe("Add current page");
 		});
 	});
 
-	describe("「+」ボタンクリック", () => {
-		it("現在のタブを読書リストに追加する", async () => {
+	describe('"+" button click', () => {
+		it("adds current tab to reading list", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://example.com/article",
@@ -125,7 +125,7 @@ describe("ReadingListPopup", () => {
 			});
 		});
 
-		it("chrome:// URLは追加しない", async () => {
+		it("does not add chrome:// URLs", async () => {
 			const mockTab = {
 				id: 1,
 				url: "chrome://extensions",
@@ -141,14 +141,14 @@ describe("ReadingListPopup", () => {
 
 			await vi.waitFor(
 				() => {
-					// addItemが呼ばれていないことを確認
+					// Verify addItem was not called
 					expect(popup.storage.addItem).not.toHaveBeenCalled();
 				},
 				{ timeout: 150 },
 			);
 		});
 
-		it("追加中はローディング状態を表示する", async () => {
+		it("displays loading state while adding", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://example.com/article",
@@ -157,7 +157,7 @@ describe("ReadingListPopup", () => {
 
 			mockChrome.tabs.query.mockResolvedValue([mockTab]);
 
-			// 遅延を追加してローディング状態を確認
+			// Add delay to verify loading state
 			popup.storage.addItem = vi.fn().mockImplementation(
 				() =>
 					new Promise((resolve) =>
@@ -186,13 +186,13 @@ describe("ReadingListPopup", () => {
 		});
 	});
 
-	describe("検索連携", () => {
-		it("検索ボックスが表示される", () => {
+	describe("Search integration", () => {
+		it("displays search box", () => {
 			const searchBox = popup.shadowRoot?.querySelector("search-box");
 			expect(searchBox).toBeTruthy();
 		});
 
-		it("検索入力でアイテムがフィルタリングされる", async () => {
+		it("filters items by search input", async () => {
 			popup.storage.searchItems = vi.fn().mockResolvedValue([mockItems[0]]);
 
 			const searchBox = popup.shadowRoot?.querySelector("search-box");
@@ -214,7 +214,7 @@ describe("ReadingListPopup", () => {
 			expect(itemList.items[0]).toEqual(mockItems[0]);
 		});
 
-		it("空の検索クエリで全アイテムを表示する", async () => {
+		it("displays all items with empty search query", async () => {
 			popup.storage.getItems = vi.fn().mockResolvedValue(mockItems);
 
 			const searchBox = popup.shadowRoot?.querySelector("search-box");
@@ -236,8 +236,8 @@ describe("ReadingListPopup", () => {
 		});
 	});
 
-	describe("アイテム操作", () => {
-		it("アイテムクリックで新しいタブを開く", async () => {
+	describe("Item operations", () => {
+		it("opens new tab on item click", async () => {
 			const itemList = popup.shadowRoot?.querySelector("item-list");
 			itemList?.dispatchEvent(
 				new CustomEvent("item-click", {
@@ -256,7 +256,7 @@ describe("ReadingListPopup", () => {
 			});
 		});
 
-		it("Ctrl/Cmd+クリックで新しいタブを開く", async () => {
+		it("opens new tab with Ctrl/Cmd+click", async () => {
 			const itemList = popup.shadowRoot?.querySelector("item-list");
 			itemList?.dispatchEvent(
 				new CustomEvent("item-click", {
@@ -276,7 +276,7 @@ describe("ReadingListPopup", () => {
 			});
 		});
 
-		it("アイテム削除でストレージから削除する", async () => {
+		it("removes item from storage on delete", async () => {
 			popup.storage.removeItem = vi.fn().mockResolvedValue(undefined);
 			popup.storage.getItems = vi.fn().mockResolvedValue([mockItems[1]]);
 
@@ -300,13 +300,13 @@ describe("ReadingListPopup", () => {
 		});
 	});
 
-	describe("ローディング状態", () => {
-		it("初期ロード時にローディングを表示する", async () => {
-			// 新しいポップアップインスタンスを作成（loadItemsが呼ばれる前の状態）
+	describe("Loading state", () => {
+		it("displays loading on initial load", async () => {
+			// Create new popup instance (before loadItems is called)
 			const newPopup = document.createElement(
 				"reading-list-popup",
 			) as ReadingListPopup;
-			// loadItemsをモックして遅延させる
+			// Mock loadItems with delay
 			newPopup.storage.getItems = vi
 				.fn()
 				.mockImplementation(
@@ -315,14 +315,14 @@ describe("ReadingListPopup", () => {
 			container.appendChild(newPopup);
 			await newPopup.updateComplete;
 
-			// connectedCallbackが呼ばれた直後の状態を確認
+			// Verify state right after connectedCallback is called
 			const itemList = newPopup.shadowRoot?.querySelector(
 				"item-list",
 			) as ItemList;
 			expect(itemList.loading).toBe(true);
 		});
 
-		it("データロード完了後にローディングを非表示にする", async () => {
+		it("hides loading after data load completes", async () => {
 			popup.storage.getItems = vi.fn().mockResolvedValue(mockItems);
 			await popup.loadItems();
 			await popup.updateComplete;
@@ -333,37 +333,37 @@ describe("ReadingListPopup", () => {
 		});
 	});
 
-	describe("ストレージ変更リスナー", () => {
-		it("disconnectedCallbackでリスナーが削除される", () => {
-			// chrome.storage.sync.onChanged.addListenerのモックを作成
+	describe("Storage change listener", () => {
+		it("removes listener in disconnectedCallback", () => {
+			// Create mock for chrome.storage.sync.onChanged.addListener
 			const addListenerSpy = vi.fn();
 			mockChrome.storage.sync.onChanged.addListener = addListenerSpy;
 
-			// chrome.storage.sync.onChanged.removeListenerのモックを作成
+			// Create mock for chrome.storage.sync.onChanged.removeListener
 			const removeListenerSpy = vi.fn();
 			mockChrome.storage.sync.onChanged.removeListener = removeListenerSpy;
 
-			// 新しいポップアップインスタンスを作成（connectedCallbackが呼ばれる）
+			// Create new popup instance (connectedCallback is called)
 			const testPopup = document.createElement(
 				"reading-list-popup",
 			) as ReadingListPopup;
 			container.appendChild(testPopup);
 
-			// リスナーが追加されたことを確認
+			// Verify listener was added
 			expect(addListenerSpy).toHaveBeenCalled();
 			const addedListener = addListenerSpy.mock.calls[0][0];
 			expect(addedListener).toBeDefined();
 
-			// disconnectedCallbackを呼ぶ
+			// Call disconnectedCallback
 			testPopup.disconnectedCallback();
 
-			// リスナーが削除されたことを確認
+			// Verify listener was removed
 			expect(removeListenerSpy).toHaveBeenCalledWith(addedListener);
 		});
 	});
 
-	describe("複数アイテム表示", () => {
-		it("0アイテムの場合「0 items」と表示される", async () => {
+	describe("Multiple items display", () => {
+		it('displays "0 items" when 0 items', async () => {
 			popup.storage.getItemCount = vi.fn().mockResolvedValue(0);
 			await popup.loadItems();
 			await popup.updateComplete;
@@ -372,7 +372,7 @@ describe("ReadingListPopup", () => {
 			expect(count?.textContent?.trim()).toBe("0 items");
 		});
 
-		it("1アイテムの場合「1 item」と表示される", async () => {
+		it('displays "1 item" when 1 item', async () => {
 			popup.storage.getItemCount = vi.fn().mockResolvedValue(1);
 			await popup.loadItems();
 			await popup.updateComplete;
@@ -381,7 +381,7 @@ describe("ReadingListPopup", () => {
 			expect(count?.textContent?.trim()).toBe("1 item");
 		});
 
-		it("2アイテム以上の場合「N items」と表示される", async () => {
+		it('displays "N items" when 2 or more items', async () => {
 			popup.storage.getItemCount = vi.fn().mockResolvedValue(5);
 			await popup.loadItems();
 			await popup.updateComplete;

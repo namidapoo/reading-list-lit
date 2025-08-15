@@ -3,18 +3,18 @@ import { createFullChromeMock, setupGlobalChrome } from "@test-utils/helpers";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReadingItem } from "@/types";
 
-// Chrome APIのモック
+// Chrome API mock
 const mockChrome = createFullChromeMock();
 setupGlobalChrome(mockChrome);
 
-describe("統合テスト", () => {
+describe("Integration Tests", () => {
 	let storage: ReadingListStorage;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		storage = new ReadingListStorage();
 
-		// デフォルトのモック動作を設定
+		// Set default mock behavior
 		mockChrome.storage.sync.get.mockImplementation((_keys, callback) => {
 			if (callback) {
 				callback({ items: [] });
@@ -30,12 +30,12 @@ describe("統合テスト", () => {
 		});
 	});
 
-	describe("エンドツーエンドワークフロー", () => {
-		it("ページ追加から表示、削除までの一連の流れが動作する", async () => {
+	describe("End-to-end workflow", () => {
+		it("works through the entire flow from adding to displaying to deleting pages", async () => {
 			const testUrl = "https://example.com/article";
 			const testTitle = "Test Article";
 
-			// 1. アイテムを追加
+			// 1. Add item
 			const addedItem = await storage.addItem(testUrl, testTitle);
 			expect(addedItem).toMatchObject({
 				url: testUrl,
@@ -44,7 +44,7 @@ describe("統合テスト", () => {
 			expect(addedItem.id).toBeDefined();
 			expect(addedItem.addedAt).toBeDefined();
 
-			// 2. アイテムを取得
+			// 2. Get items
 			mockChrome.storage.sync.get.mockImplementation((_keys, callback) => {
 				if (callback) {
 					callback({ items: [addedItem] });
@@ -56,16 +56,16 @@ describe("統合テスト", () => {
 			expect(items).toHaveLength(1);
 			expect(items[0]).toEqual(addedItem);
 
-			// 3. アイテムを検索
+			// 3. Search items
 			const searchResults = await storage.searchItems("Test");
 			expect(searchResults).toHaveLength(1);
 			expect(searchResults[0]).toEqual(addedItem);
 
-			// 4. アイテム数を確認
+			// 4. Check item count
 			const count = await storage.getItemCount();
 			expect(count).toBe(1);
 
-			// 5. アイテムを削除
+			// 5. Delete item
 			mockChrome.storage.sync.get.mockImplementation((_keys, callback) => {
 				if (callback) {
 					callback({ items: [] });
@@ -78,10 +78,10 @@ describe("統合テスト", () => {
 			expect(remainingItems).toHaveLength(0);
 		});
 
-		it("複数タブから同時にアイテムを追加しても競合しない", async () => {
+		it("does not conflict when adding items simultaneously from multiple tabs", async () => {
 			const items: ReadingItem[] = [];
 
-			// 複数のアイテムを同時に追加
+			// Add multiple items simultaneously
 			const promises = Array.from({ length: 5 }, (_, i) => {
 				return storage.addItem(
 					`https://example.com/article-${i}`,
@@ -89,7 +89,7 @@ describe("統合テスト", () => {
 				);
 			});
 
-			// モックの動作を更新
+			// Update mock behavior
 			mockChrome.storage.sync.set.mockImplementation((data, callback) => {
 				if (data.items) {
 					items.push(...data.items);
@@ -109,28 +109,28 @@ describe("統合テスト", () => {
 		});
 	});
 
-	describe("Chrome API連携", () => {
-		it("ストレージ変更イベントが正しく処理される", async () => {
+	describe("Chrome API integration", () => {
+		it("storage change events are handled correctly", async () => {
 			const listener = vi.fn();
 
-			// リスナーを登録
+			// Register listener
 			mockChrome.storage.sync.onChanged.addListener(listener);
 
-			// ストレージを変更
+			// Change storage
 			await storage.addItem("https://example.com", "Example");
 
-			// setが呼ばれたことを確認
+			// Verify set was called
 			expect(mockChrome.storage.sync.set).toHaveBeenCalled();
 		});
 
-		it("タブ操作APIが正しく呼び出される", async () => {
+		it("tab operation APIs are called correctly", async () => {
 			const testUrl = "https://example.com/article";
 
-			// 現在のタブで開く
+			// Open in current tab
 			mockChrome.tabs.update({ url: testUrl });
 			expect(mockChrome.tabs.update).toHaveBeenCalledWith({ url: testUrl });
 
-			// 新しいタブで開く
+			// Open in new tab
 			mockChrome.tabs.create({ url: testUrl, active: false });
 			expect(mockChrome.tabs.create).toHaveBeenCalledWith({
 				url: testUrl,
@@ -138,10 +138,10 @@ describe("統合テスト", () => {
 			});
 		});
 
-		it("バッジ通知が正しく表示される", () => {
+		it("badge notifications are displayed correctly", () => {
 			const tabId = 1;
 
-			// 成功バッジ
+			// Success badge
 			mockChrome.action.setBadgeText({ text: "✓", tabId });
 			mockChrome.action.setBadgeBackgroundColor({ color: "#16a34a", tabId });
 
@@ -154,7 +154,7 @@ describe("統合テスト", () => {
 				tabId,
 			});
 
-			// エラーバッジ
+			// Error badge
 			mockChrome.action.setBadgeText({ text: "!", tabId });
 			mockChrome.action.setBadgeBackgroundColor({ color: "#dc2626", tabId });
 
@@ -171,9 +171,9 @@ describe("統合テスト", () => {
 		});
 	});
 
-	describe("エラーハンドリング", () => {
-		it("ストレージ容量超過時にエラーが発生する", async () => {
-			// 512個のアイテムを追加
+	describe("Error handling", () => {
+		it("throws error when storage capacity is exceeded", async () => {
+			// Add 512 items
 			const items = Array.from({ length: 512 }, (_, i) => ({
 				id: `item-${i}`,
 				url: `https://example.com/${i}`,
@@ -188,13 +188,13 @@ describe("統合テスト", () => {
 				return Promise.resolve({ items: items });
 			});
 
-			// 513個目のアイテムを追加しようとする
+			// Try to add 513th item
 			await expect(
 				storage.addItem("https://example.com/513", "Item 513"),
 			).rejects.toThrow("Storage limit reached");
 		});
 
-		it("無効なURLは拒否される", async () => {
+		it("rejects invalid URLs", async () => {
 			const invalidUrls = [
 				"not-a-url",
 				"javascript:alert('test')",
@@ -209,7 +209,7 @@ describe("統合テスト", () => {
 			}
 		});
 
-		it("Chrome内部URLは処理されない", async () => {
+		it("does not process Chrome internal URLs", async () => {
 			const internalUrls = [
 				"chrome://extensions",
 				"chrome-extension://abc123",
@@ -218,9 +218,9 @@ describe("統合テスト", () => {
 				"brave://rewards",
 			];
 
-			// これらのURLは、background.tsでチェックされるので
-			// ここではストレージレベルでのテストは不要
-			// ただし、統合テストとして確認
+			// These URLs are checked in background.ts, so
+			// storage level testing is not needed here
+			// However, verify as integration test
 			for (const url of internalUrls) {
 				// storage.addItemは通常のURLとして処理するが、
 				// background.tsのisInternalUrlでフィルタリングされる
@@ -228,7 +228,7 @@ describe("統合テスト", () => {
 					url.startsWith("chrome://") ||
 					url.startsWith("chrome-extension://")
 				) {
-					// Chrome URLは実際にはaddItemで拒否される
+					// Chrome URLs are actually rejected by addItem
 					await expect(storage.addItem(url, "Test")).rejects.toThrow(
 						"Invalid URL",
 					);
@@ -237,9 +237,9 @@ describe("統合テスト", () => {
 		});
 	});
 
-	describe("パフォーマンス", () => {
-		it("検索が100ms以内に完了する", async () => {
-			// 100個のアイテムを準備
+	describe("Performance", () => {
+		it("search completes within 100ms", async () => {
+			// Prepare 100 items
 			const items = Array.from({ length: 100 }, (_, i) => ({
 				id: `item-${i}`,
 				url: `https://example.com/${i}`,
@@ -259,11 +259,11 @@ describe("統合テスト", () => {
 			const endTime = performance.now();
 
 			expect(endTime - startTime).toBeLessThan(100);
-			expect(results).toHaveLength(100); // すべてのアイテムが"Article"を含む
+			expect(results).toHaveLength(100); // All items contain "Article"
 		});
 
-		it("512個のアイテムでも正常に動作する", async () => {
-			// 最大数のアイテムを準備
+		it("works correctly with 512 items", async () => {
+			// Prepare maximum number of items
 			const items = Array.from({ length: 512 }, (_, i) => ({
 				id: `item-${i}`,
 				url: `https://example.com/${i}`,

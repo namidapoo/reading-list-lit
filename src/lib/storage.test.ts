@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReadingItem } from "@/types";
 import { ReadingListStorage } from "./storage";
 
-// Chrome API のモック
+// Chrome API mock
 const mockChrome = createFullChromeMock();
 setupGlobalChrome(mockChrome);
 
@@ -13,7 +13,7 @@ describe("ReadingListStorage", () => {
 	beforeEach(() => {
 		storage = new ReadingListStorage();
 		vi.clearAllMocks();
-		// デフォルトの返り値を設定
+		// Set default return values
 		mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 		mockChrome.storage.sync.set.mockResolvedValue(undefined);
 		mockChrome.storage.sync.remove.mockResolvedValue(undefined);
@@ -21,7 +21,7 @@ describe("ReadingListStorage", () => {
 	});
 
 	describe("addItem", () => {
-		it("正常なアイテムを追加できる", async () => {
+		it("can add normal items", async () => {
 			const url = "https://example.com/article";
 			const title = "Test Article";
 
@@ -41,13 +41,13 @@ describe("ReadingListStorage", () => {
 			});
 		});
 
-		it("重複URLの場合は既存アイテムを更新する", async () => {
+		it("updates existing item for duplicate URL", async () => {
 			const url = "https://example.com/article";
 			const existingItem: ReadingItem = {
 				id: "existing-id",
 				url,
 				title: "Old Title",
-				addedAt: Date.now() - 10000, // 10秒前
+				addedAt: Date.now() - 10000, // 10 seconds ago
 			};
 
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [existingItem] });
@@ -59,7 +59,7 @@ describe("ReadingListStorage", () => {
 			expect(item.addedAt).toBeGreaterThan(existingItem.addedAt);
 		});
 
-		it("タイトルが255文字を超える場合は切り詰める", async () => {
+		it("truncates title if exceeds 255 characters", async () => {
 			const url = "https://example.com";
 			const longTitle = "a".repeat(300);
 
@@ -69,7 +69,7 @@ describe("ReadingListStorage", () => {
 			expect(item.title).toBe("a".repeat(255));
 		});
 
-		it("無効なURLの場合はエラーをスローする", async () => {
+		it("throws error for invalid URLs", async () => {
 			await expect(storage.addItem("not-a-url", "Title")).rejects.toThrow(
 				"Invalid URL",
 			);
@@ -78,7 +78,7 @@ describe("ReadingListStorage", () => {
 			).rejects.toThrow("Invalid URL");
 		});
 
-		it("512件の制限に達している場合はエラーをスローする", async () => {
+		it("throws error when 512 item limit is reached", async () => {
 			const items = Array.from({ length: 512 }, (_, i) => ({
 				id: `item-${i}`,
 				url: `https://example.com/${i}`,
@@ -95,7 +95,7 @@ describe("ReadingListStorage", () => {
 	});
 
 	describe("removeItem", () => {
-		it("正常にアイテムを削除できる", async () => {
+		it("can remove items normally", async () => {
 			const items: ReadingItem[] = [
 				{
 					id: "item-1",
@@ -127,7 +127,7 @@ describe("ReadingListStorage", () => {
 			});
 		});
 
-		it("存在しないアイテムを削除しようとしてもエラーにならない", async () => {
+		it("does not error when removing non-existent item", async () => {
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 
 			await expect(storage.removeItem("non-existent")).resolves.not.toThrow();
@@ -135,7 +135,7 @@ describe("ReadingListStorage", () => {
 	});
 
 	describe("getItems", () => {
-		it("空の状態で空配列を返す", async () => {
+		it("returns empty array when empty", async () => {
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 
 			const items = await storage.getItems();
@@ -143,7 +143,7 @@ describe("ReadingListStorage", () => {
 			expect(items).toEqual([]);
 		});
 
-		it("追加日時の降順でソートされたアイテムを返す", async () => {
+		it("returns items sorted by added date in descending order", async () => {
 			const now = Date.now();
 			const items: ReadingItem[] = [
 				{
@@ -202,7 +202,7 @@ describe("ReadingListStorage", () => {
 			mockChrome.storage.sync.get.mockResolvedValue({ items });
 		});
 
-		it("タイトルで部分一致検索ができる", async () => {
+		it("can search by partial title match", async () => {
 			const result = await storage.searchItems("Script");
 
 			expect(result).toHaveLength(2);
@@ -210,27 +210,27 @@ describe("ReadingListStorage", () => {
 			expect(result[1].id).toBe("item-2");
 		});
 
-		it("URLで部分一致検索ができる", async () => {
+		it("can search by partial URL match", async () => {
 			const result = await storage.searchItems("blog");
 
 			expect(result).toHaveLength(1);
 			expect(result[0].id).toBe("item-2");
 		});
 
-		it("大文字小文字を無視して検索できる", async () => {
+		it("can search case-insensitively", async () => {
 			const result = await storage.searchItems("JAVASCRIPT");
 
 			expect(result).toHaveLength(1);
 			expect(result[0].id).toBe("item-1");
 		});
 
-		it("空文字列の場合は全件返す", async () => {
+		it("returns all items for empty string", async () => {
 			const result = await storage.searchItems("");
 
 			expect(result).toHaveLength(3);
 		});
 
-		it("検索結果も追加日時の降順でソートされる", async () => {
+		it("search results are also sorted by added date in descending order", async () => {
 			const result = await storage.searchItems("example");
 
 			expect(result).toHaveLength(3);
@@ -241,7 +241,7 @@ describe("ReadingListStorage", () => {
 	});
 
 	describe("getItemCount", () => {
-		it("アイテム数を正しく返す", async () => {
+		it("returns correct item count", async () => {
 			const items = Array.from({ length: 42 }, (_, i) => ({
 				id: `item-${i}`,
 				url: `https://example.com/${i}`,
@@ -256,7 +256,7 @@ describe("ReadingListStorage", () => {
 			expect(count).toBe(42);
 		});
 
-		it("空の場合は0を返す", async () => {
+		it("returns 0 when empty", async () => {
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 
 			const count = await storage.getItemCount();
@@ -265,8 +265,8 @@ describe("ReadingListStorage", () => {
 		});
 	});
 
-	describe("ストレージ制限", () => {
-		it("512件まで追加できる", async () => {
+	describe("Storage limits", () => {
+		it("can add up to 512 items", async () => {
 			const items = Array.from({ length: 511 }, (_, i) => ({
 				id: `item-${i}`,
 				url: `https://example.com/${i}`,
@@ -281,7 +281,7 @@ describe("ReadingListStorage", () => {
 			).resolves.not.toThrow();
 		});
 
-		it("513件目を追加しようとするとエラーになる", async () => {
+		it("throws error when trying to add 513th item", async () => {
 			const items = Array.from({ length: 512 }, (_, i) => ({
 				id: `item-${i}`,
 				url: `https://example.com/${i}`,
@@ -297,8 +297,8 @@ describe("ReadingListStorage", () => {
 		});
 	});
 
-	describe("エッジケースのテスト", () => {
-		it("8000文字以上の長いURLを処理できる", async () => {
+	describe("Edge case tests", () => {
+		it("can handle long URLs over 8000 characters", async () => {
 			const longUrl = `https://example.com/path?query=${"a".repeat(8000)}`;
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 			mockChrome.storage.sync.set.mockResolvedValue(undefined);
@@ -310,19 +310,19 @@ describe("ReadingListStorage", () => {
 			expect(mockChrome.storage.sync.set).toHaveBeenCalled();
 		});
 
-		it("日本語、絵文字を含むURLとタイトルを処理できる", async () => {
+		it("can handle URLs and titles with Japanese and emojis", async () => {
 			const specialUrls = [
 				{
-					url: "https://example.com/日本語/パス",
-					title: "日本語のタイトル",
+					url: "https://example.com/japanese/path",
+					title: "Japanese Title",
 				},
 				{
 					url: "https://example.com/emoji/🎉🚀",
-					title: "絵文字タイトル 🎉🚀🌟",
+					title: "Emoji Title 🎉🚀🌟",
 				},
 				{
-					url: "https://example.com/mixed/混合😀パス",
-					title: "Mixed 混合 Title 🔥",
+					url: "https://example.com/mixed/mixed😀path",
+					title: "Mixed Title 🔥",
 				},
 			];
 
@@ -338,7 +338,7 @@ describe("ReadingListStorage", () => {
 			}
 		});
 
-		it("特殊文字を含むURLを正しくエンコード・デコードできる", async () => {
+		it("can correctly encode and decode URLs with special characters", async () => {
 			const specialChars = [
 				"https://example.com/path?query=value&another=test",
 				"https://example.com/path#fragment",
@@ -359,7 +359,7 @@ describe("ReadingListStorage", () => {
 			}
 		});
 
-		it("空のタイトルでもアイテムを追加できる", async () => {
+		it("can add items with empty title", async () => {
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 			mockChrome.storage.sync.set.mockResolvedValue(undefined);
 
@@ -369,7 +369,7 @@ describe("ReadingListStorage", () => {
 			expect(result.title).toBe("");
 		});
 
-		it("非常に長いタイトル（10000文字）を処理できる", async () => {
+		it("can handle very long titles (10000 characters)", async () => {
 			const longTitle = "a".repeat(10000);
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 			mockChrome.storage.sync.set.mockResolvedValue(undefined);
@@ -377,11 +377,11 @@ describe("ReadingListStorage", () => {
 			const result = await storage.addItem("https://example.com", longTitle);
 
 			expect(result).toBeDefined();
-			// MAX_TITLE_LENGTH (255文字) に切り詰められることを確認
+			// Verify truncated to MAX_TITLE_LENGTH (255 characters)
 			expect(result.title).toBe("a".repeat(255));
 		});
 
-		it("同時に同じアイテムを削除しようとしても安全に処理される", async () => {
+		it("safely handles concurrent deletion of same item", async () => {
 			const itemId = "duplicate-delete";
 			const items = [
 				{
@@ -394,7 +394,7 @@ describe("ReadingListStorage", () => {
 
 			let deleteCount = 0;
 			mockChrome.storage.sync.get.mockImplementation(() => {
-				// 2回目以降は空の配列を返す（既に削除済み）
+				// Return empty array after first deletion
 				if (deleteCount > 0) {
 					return Promise.resolve({ items: [] });
 				}
@@ -406,21 +406,21 @@ describe("ReadingListStorage", () => {
 				return Promise.resolve(undefined);
 			});
 
-			// 同時に2回削除を試みる
+			// Try to delete twice concurrently
 			const [result1, result2] = await Promise.allSettled([
 				storage.removeItem(itemId),
 				storage.removeItem(itemId),
 			]);
 
-			// 少なくとも1つは成功すべき
+			// At least one should succeed
 			const successes = [result1, result2].filter(
 				(r) => r.status === "fulfilled",
 			);
 			expect(successes.length).toBeGreaterThanOrEqual(1);
 		});
 
-		it("未来の日付のアイテムも正しく処理される", async () => {
-			const futureDate = Date.now() + 86400000 * 365; // 1年後
+		it("correctly handles items with future dates", async () => {
+			const futureDate = Date.now() + 86400000 * 365; // 1 year later
 			const item = {
 				id: "future-item",
 				url: "https://example.com",
@@ -436,8 +436,8 @@ describe("ReadingListStorage", () => {
 			expect(items[0].addedAt).toBe(futureDate);
 		});
 
-		it("負の日付（1970年以前）のアイテムも処理できる", async () => {
-			const pastDate = -86400000; // 1970年1月1日の1日前
+		it("can handle items with negative dates (before 1970)", async () => {
+			const pastDate = -86400000; // 1 day before January 1, 1970
 			const item = {
 				id: "past-item",
 				url: "https://example.com",
@@ -453,7 +453,7 @@ describe("ReadingListStorage", () => {
 			expect(items[0].addedAt).toBe(pastDate);
 		});
 
-		it("不正なURL形式はエラーになる", async () => {
+		it("throws error for invalid URL formats", async () => {
 			const invalidUrls = [
 				"not-a-url",
 				"//no-protocol.com",
@@ -467,14 +467,14 @@ describe("ReadingListStorage", () => {
 				mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 				mockChrome.storage.sync.set.mockResolvedValue(undefined);
 
-				// 不正なURLはエラーをスローすることを確認
+				// Verify invalid URLs throw error
 				await expect(storage.addItem(url, "Invalid URL Test")).rejects.toThrow(
 					"Invalid URL",
 				);
 			}
 		});
 
-		it("ストレージが空の状態で削除を試みてもエラーにならない", async () => {
+		it("does not error when trying to delete from empty storage", async () => {
 			mockChrome.storage.sync.get.mockResolvedValue({ items: [] });
 
 			await expect(

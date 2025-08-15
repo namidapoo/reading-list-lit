@@ -3,22 +3,22 @@ import { ReadingListStorage } from "./storage";
 export class BackgroundService {
 	private storage = new ReadingListStorage();
 
-	// 拡張機能の初期化処理
+	// Initialize extension
 	async initialize() {
 		console.log("Reading List extension installed");
 		this.createContextMenus();
 	}
 
-	// コンテキストメニューの作成
+	// Create context menus
 	private createContextMenus() {
-		// ページ全体を保存するメニュー
+		// Menu to save entire page
 		chrome.contextMenus.create({
 			id: "save-page",
 			title: "Save to Reading List",
 			contexts: ["page"],
 		});
 
-		// リンクを保存するメニュー
+		// Menu to save link
 		chrome.contextMenus.create({
 			id: "save-link",
 			title: "Save Link to Reading List",
@@ -26,7 +26,7 @@ export class BackgroundService {
 		});
 	}
 
-	// コンテキストメニューのクリック処理
+	// Handle context menu clicks
 	async handleContextMenuClick(
 		info: chrome.contextMenus.OnClickData,
 		tab?: chrome.tabs.Tab,
@@ -38,14 +38,14 @@ export class BackgroundService {
 		}
 	}
 
-	// ページ保存処理
+	// Handle saving page
 	private async handleSavePage(
 		_info: chrome.contextMenus.OnClickData,
 		tab?: chrome.tabs.Tab,
 	) {
 		if (!tab?.url || !tab?.id) return;
 
-		// chrome:// などの内部URLは保存しない
+		// Don't save internal URLs like chrome://
 		if (this.isInternalUrl(tab.url)) {
 			return;
 		}
@@ -61,19 +61,19 @@ export class BackgroundService {
 		}
 	}
 
-	// リンク保存処理
+	// Handle saving link
 	private async handleSaveLink(
 		info: chrome.contextMenus.OnClickData,
 		tab?: chrome.tabs.Tab,
 	) {
 		if (!info.linkUrl || !tab?.id) return;
 
-		// 危険なURLは保存しない
+		// Don't save dangerous URLs
 		if (this.isInternalUrl(info.linkUrl) || this.isDangerousUrl(info.linkUrl)) {
 			return;
 		}
 
-		// リンクの場合、タイトルは取得できないのでURLを使用
+		// For links, use URL as title since title is not available
 		const title = info.linkUrl;
 
 		try {
@@ -85,7 +85,7 @@ export class BackgroundService {
 		}
 	}
 
-	// 内部URLかどうかを判定
+	// Check if URL is internal
 	private isInternalUrl(url: string): boolean {
 		return (
 			url.startsWith("chrome://") ||
@@ -96,44 +96,44 @@ export class BackgroundService {
 		);
 	}
 
-	// 危険なURLかどうかを判定
+	// Check if URL is dangerous
 	private isDangerousUrl(url: string): boolean {
 		return url.startsWith("javascript:") || url.startsWith("data:");
 	}
 
-	// 成功バッジを表示
+	// Show success badge
 	private showSuccessBadge(tabId: number) {
 		chrome.action.setBadgeText({ text: "✓", tabId });
 		chrome.action.setBadgeBackgroundColor({ color: "#16a34a", tabId });
 
-		// 3秒後にバッジをクリア
+		// Clear badge after 3 seconds
 		setTimeout(() => {
 			chrome.action.setBadgeText({ text: "", tabId });
 		}, 3000);
 	}
 
-	// エラーバッジを表示
+	// Show error badge
 	private showErrorBadge(tabId: number) {
 		chrome.action.setBadgeText({ text: "!", tabId });
 		chrome.action.setBadgeBackgroundColor({ color: "#dc2626", tabId });
 
-		// 3秒後にバッジをクリア
+		// Clear badge after 3 seconds
 		setTimeout(() => {
 			chrome.action.setBadgeText({ text: "", tabId });
 		}, 3000);
 	}
 
-	// メッセージハンドリング（将来拡張用）
+	// Message handling (for future extension)
 	handleMessage(
 		_request: unknown,
 		_sender: chrome.runtime.MessageSender,
 		_sendResponse: (response: unknown) => void,
 	): boolean {
-		// 将来的にcontent scriptとの通信が必要な場合に使用
+		// Use when communication with content script is needed in the future
 		return true;
 	}
 
-	// ストレージインスタンスの取得（必要に応じて）
+	// Get storage instance (as needed)
 	getStorage() {
 		return this.storage;
 	}

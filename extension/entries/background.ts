@@ -2,20 +2,20 @@ import { BackgroundService } from "@lib/background-service";
 
 const backgroundService = new BackgroundService();
 
-// 拡張機能のインストール/更新時の処理
+// Extension install/update handler
 chrome.runtime.onInstalled.addListener(() => {
 	backgroundService.initialize();
 });
 
-// コンテキストメニューのクリックハンドラー
+// Context menu click handler
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 	await backgroundService.handleContextMenuClick(info, tab);
 });
 
-// メッセージハンドラー（必要に応じて）
+// Message handler (as needed)
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	return backgroundService.handleMessage(request, sender, sendResponse);
 });
 
-// ストレージインスタンスをエクスポート（既存コードとの互換性のため）
+// Export storage instance (for compatibility with existing code)
 export const storage = backgroundService.getStorage();

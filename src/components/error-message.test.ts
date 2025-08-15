@@ -25,16 +25,16 @@ describe("ErrorMessage", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("エラー表示", () => {
-		it("エラーメッセージが表示される", async () => {
-			errorMessage.message = "テストエラーメッセージ";
+	describe("Error display", () => {
+		it("displays error message", async () => {
+			errorMessage.message = "Test error message";
 			await waitForUpdates(errorMessage);
 
 			const messageDiv = errorMessage.shadowRoot?.querySelector(".message");
-			expect(messageDiv?.textContent).toBe("テストエラーメッセージ");
+			expect(messageDiv?.textContent).toBe("Test error message");
 		});
 
-		it("エラーメッセージが空の場合は何も表示されない", async () => {
+		it("displays nothing when error message is empty", async () => {
 			errorMessage.message = "";
 			await waitForUpdates(errorMessage);
 
@@ -43,9 +43,9 @@ describe("ErrorMessage", () => {
 			expect(container).toBeFalsy();
 		});
 
-		it("エラータイプによってスタイルが変わる", async () => {
-			// 通常のエラー
-			errorMessage.message = "通常のエラー";
+		it("changes style based on error type", async () => {
+			// Normal error
+			errorMessage.message = "Normal error";
 			errorMessage.type = "error";
 			await waitForUpdates(errorMessage);
 
@@ -53,14 +53,14 @@ describe("ErrorMessage", () => {
 				errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container?.classList.contains("error")).toBe(true);
 
-			// 警告
+			// Warning
 			errorMessage.type = "warning";
 			await waitForUpdates(errorMessage);
 
 			container = errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container?.classList.contains("warning")).toBe(true);
 
-			// 情報
+			// Info
 			errorMessage.type = "info";
 			await waitForUpdates(errorMessage);
 
@@ -68,8 +68,8 @@ describe("ErrorMessage", () => {
 			expect(container?.classList.contains("info")).toBe(true);
 		});
 
-		it("アイコンが表示される", async () => {
-			errorMessage.message = "エラー";
+		it("displays icon", async () => {
+			errorMessage.message = "Error";
 			errorMessage.type = "error";
 			await waitForUpdates(errorMessage);
 
@@ -78,43 +78,43 @@ describe("ErrorMessage", () => {
 		});
 	});
 
-	describe("自動非表示", () => {
-		it("指定時間後に自動的に非表示になる", async () => {
+	describe("Auto-hide", () => {
+		it("automatically hides after specified time", async () => {
 			vi.useFakeTimers();
 
-			errorMessage.message = "自動非表示テスト";
+			errorMessage.message = "Auto-hide test";
 			errorMessage.autoHide = true;
 			errorMessage.autoHideDelay = 3000;
 			await waitForUpdates(errorMessage);
 
-			// 初期状態では表示されている
+			// Initially displayed
 			let container =
 				errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container).toBeTruthy();
 
-			// 3秒経過
+			// 3 seconds pass
 			vi.advanceTimersByTime(3000);
 			await waitForUpdates(errorMessage);
 
-			// 非表示になっている
+			// Now hidden
 			container = errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container?.classList.contains("hiding")).toBe(true);
 
 			vi.useRealTimers();
 		});
 
-		it("autoHideがfalseの場合は非表示にならない", async () => {
+		it("does not hide when autoHide is false", async () => {
 			vi.useFakeTimers();
 
-			errorMessage.message = "永続表示テスト";
+			errorMessage.message = "Persistent display test";
 			errorMessage.autoHide = false;
 			await waitForUpdates(errorMessage);
 
-			// 5秒経過
+			// 5 seconds pass
 			vi.advanceTimersByTime(5000);
 			await waitForUpdates(errorMessage);
 
-			// まだ表示されている
+			// Still displayed
 			const container =
 				errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container).toBeTruthy();
@@ -124,9 +124,9 @@ describe("ErrorMessage", () => {
 		});
 	});
 
-	describe("閉じるボタン", () => {
-		it("閉じるボタンをクリックすると非表示になる", async () => {
-			errorMessage.message = "閉じるボタンテスト";
+	describe("Close button", () => {
+		it("hides when close button is clicked", async () => {
+			errorMessage.message = "Close button test";
 			errorMessage.showCloseButton = true;
 			await waitForUpdates(errorMessage);
 
@@ -135,18 +135,18 @@ describe("ErrorMessage", () => {
 			) as HTMLButtonElement;
 			expect(closeButton).toBeTruthy();
 
-			// クリック
+			// Click
 			closeButton.click();
 			await waitForUpdates(errorMessage);
 
-			// 非表示になっている
+			// Now hidden
 			const container =
 				errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container).toBeFalsy();
 		});
 
-		it("showCloseButtonがfalseの場合は閉じるボタンが表示されない", async () => {
-			errorMessage.message = "閉じるボタンなし";
+		it("does not show close button when showCloseButton is false", async () => {
+			errorMessage.message = "No close button";
 			errorMessage.showCloseButton = false;
 			await waitForUpdates(errorMessage);
 
@@ -156,12 +156,12 @@ describe("ErrorMessage", () => {
 		});
 	});
 
-	describe("イベント", () => {
-		it("エラークリア時にerror-clearedイベントが発火する", async () => {
+	describe("Events", () => {
+		it("fires error-cleared event when error is cleared", async () => {
 			const listener = vi.fn();
 			errorMessage.addEventListener("error-cleared", listener);
 
-			errorMessage.message = "イベントテスト";
+			errorMessage.message = "Event test";
 			errorMessage.showCloseButton = true;
 			await waitForUpdates(errorMessage);
 
@@ -173,19 +173,19 @@ describe("ErrorMessage", () => {
 			expect(listener).toHaveBeenCalled();
 		});
 
-		it("新しいエラーメッセージが設定されるとerror-shownイベントが発火する", async () => {
+		it("fires error-shown event when new error message is set", async () => {
 			const listener = vi.fn();
 			errorMessage.addEventListener("error-shown", listener);
 
-			errorMessage.message = "新しいエラー";
+			errorMessage.message = "New error";
 			await waitForUpdates(errorMessage);
 
 			expect(listener).toHaveBeenCalled();
 		});
 	});
 
-	describe("特定のエラー対応", () => {
-		it("ストレージ容量超過エラーの場合、特別なメッセージが表示される", async () => {
+	describe("Specific error handling", () => {
+		it("displays special message for storage limit error", async () => {
 			errorMessage.message = "Storage limit reached";
 			errorMessage.type = "error";
 			await waitForUpdates(errorMessage);
@@ -193,13 +193,13 @@ describe("ErrorMessage", () => {
 			const messageDiv = errorMessage.shadowRoot?.querySelector(".message");
 			expect(messageDiv?.textContent).toContain("Storage limit reached");
 
-			// 追加の説明があるか確認
+			// Check for additional description
 			const description =
 				errorMessage.shadowRoot?.querySelector(".description");
 			expect(description?.textContent).toContain("512");
 		});
 
-		it("ネットワークエラーの場合、リトライボタンが表示される", async () => {
+		it("shows retry button for network errors", async () => {
 			errorMessage.message = "Network error";
 			errorMessage.type = "error";
 			errorMessage.showRetryButton = true;
@@ -212,7 +212,7 @@ describe("ErrorMessage", () => {
 			expect(retryButton.textContent?.trim()).toBe("Retry");
 		});
 
-		it("リトライボタンクリックでretryイベントが発火する", async () => {
+		it("fires retry event when retry button is clicked", async () => {
 			const listener = vi.fn();
 			errorMessage.addEventListener("retry", listener);
 

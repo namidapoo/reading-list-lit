@@ -132,7 +132,7 @@ export class SearchBox extends LitElement {
 		const input = event.target as HTMLInputElement;
 		this.value = input.value;
 
-		// デバウンス処理
+		// Debounce processing
 		if (this.debounceTimer) {
 			clearTimeout(this.debounceTimer);
 		}
@@ -151,7 +151,7 @@ export class SearchBox extends LitElement {
 	private handleClear() {
 		this.value = "";
 
-		// inputイベントをシミュレートしてデバウンス処理を通す
+		// Simulate input event to trigger debounce processing
 		const input = this.shadowRoot?.querySelector("input");
 		if (input) {
 			input.value = "";

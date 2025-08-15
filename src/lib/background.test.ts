@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BackgroundService } from "./background-service";
 
-// Storageクラスのモック
+// Storage class mock
 vi.mock("./storage", () => ({
 	ReadingListStorage: vi.fn().mockImplementation(() => ({
 		addItem: vi.fn(),
@@ -9,7 +9,7 @@ vi.mock("./storage", () => ({
 	})),
 }));
 
-// Chrome APIのモック
+// Chrome API mock
 const mockChrome = {
 	runtime: {
 		onInstalled: {
@@ -49,8 +49,8 @@ describe("BackgroundService", () => {
 		vi.clearAllTimers();
 	});
 
-	describe("初期化", () => {
-		it("コンテキストメニューが作成される", async () => {
+	describe("Initialization", () => {
+		it("creates context menus", async () => {
 			await service.initialize();
 
 			expect(mockChrome.contextMenus.create).toHaveBeenCalledWith({
@@ -66,8 +66,8 @@ describe("BackgroundService", () => {
 		});
 	});
 
-	describe("コンテキストメニュー処理", () => {
-		it("ページ保存: 有効なURLの場合、ストレージに追加される", async () => {
+	describe("Context menu handling", () => {
+		it("Page save: adds to storage for valid URLs", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://example.com",
@@ -103,7 +103,7 @@ describe("BackgroundService", () => {
 			});
 		});
 
-		it("リンク保存: 有効なURLの場合、ストレージに追加される", async () => {
+		it("Link save: adds to storage for valid URLs", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://current-page.com",
@@ -140,7 +140,7 @@ describe("BackgroundService", () => {
 			});
 		});
 
-		it("内部URL（chrome://）は保存されない", async () => {
+		it("does not save internal URLs (chrome://)", async () => {
 			const mockTab = {
 				id: 1,
 				url: "chrome://extensions",
@@ -170,7 +170,7 @@ describe("BackgroundService", () => {
 			expect(mockChrome.action.setBadgeText).not.toHaveBeenCalled();
 		});
 
-		it("危険なURL（javascript:）は保存されない", async () => {
+		it("does not save dangerous URLs (javascript:)", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://current-page.com",
@@ -200,7 +200,7 @@ describe("BackgroundService", () => {
 			expect(mockStorage.addItem).not.toHaveBeenCalled();
 		});
 
-		it("ストレージエラー時にエラーバッジが表示される", async () => {
+		it("displays error badge on storage error", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://example.com",
@@ -239,7 +239,7 @@ describe("BackgroundService", () => {
 		});
 	});
 
-	describe("バッジ処理", () => {
+	describe("Badge handling", () => {
 		beforeEach(() => {
 			vi.useFakeTimers();
 		});
@@ -248,7 +248,7 @@ describe("BackgroundService", () => {
 			vi.useRealTimers();
 		});
 
-		it("成功バッジが3秒後にクリアされる", async () => {
+		it("clears success badge after 3 seconds", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://example.com",
@@ -274,7 +274,7 @@ describe("BackgroundService", () => {
 
 			await service.handleContextMenuClick(mockInfo, mockTab);
 
-			// 3秒経過
+			// 3 seconds pass
 			vi.advanceTimersByTime(3000);
 
 			expect(mockChrome.action.setBadgeText).toHaveBeenLastCalledWith({
@@ -283,7 +283,7 @@ describe("BackgroundService", () => {
 			});
 		});
 
-		it("エラーバッジが3秒後にクリアされる", async () => {
+		it("clears error badge after 3 seconds", async () => {
 			const mockTab = {
 				id: 1,
 				url: "https://example.com",
@@ -311,7 +311,7 @@ describe("BackgroundService", () => {
 
 			await service.handleContextMenuClick(mockInfo, mockTab);
 
-			// 3秒経過
+			// 3 seconds pass
 			vi.advanceTimersByTime(3000);
 
 			expect(mockChrome.action.setBadgeText).toHaveBeenLastCalledWith({
@@ -321,8 +321,8 @@ describe("BackgroundService", () => {
 		});
 	});
 
-	describe("メッセージハンドリング", () => {
-		it("メッセージハンドラーがtrueを返す", () => {
+	describe("Message handling", () => {
+		it("message handler returns true", () => {
 			const result = service.handleMessage(
 				{ type: "test" },
 				{} as chrome.runtime.MessageSender,

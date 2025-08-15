@@ -1,6 +1,6 @@
 import "@popup/app";
 
-// アプリケーションをマウント
+// Mount application
 document.addEventListener("DOMContentLoaded", () => {
 	const app = document.getElementById("app");
 	if (app) {

@@ -14,7 +14,7 @@ describe("ReadingItem", () => {
 	let element: ReadingItemElement;
 	const mockItem = createMockItem({
 		title: "Test Article Title",
-		addedAt: Date.now() - 3600000, // 1時間前
+		addedAt: Date.now() - 3600000, // 1 hour ago
 	});
 
 	beforeEach(async () => {
@@ -33,13 +33,13 @@ describe("ReadingItem", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("レンダリング", () => {
-		it("タイトルが表示される", () => {
+	describe("Rendering", () => {
+		it("displays title", () => {
 			const title = element.shadowRoot?.querySelector(".item-title");
 			expect(title?.textContent).toBe(mockItem.title);
 		});
 
-		it("URLが表示される", () => {
+		it("displays URL", () => {
 			const url = element.shadowRoot?.querySelector(".item-url");
 			// URL is formatted to show only hostname
 			expect(url?.textContent).toBe("example.com");
@@ -47,12 +47,12 @@ describe("ReadingItem", () => {
 			expect(url?.getAttribute("title")).toBe(mockItem.url);
 		});
 
-		it("追加日時が相対形式で表示される", () => {
+		it("displays added date in relative format", () => {
 			const time = element.shadowRoot?.querySelector(".item-time");
 			expect(time?.textContent).toMatch(/1 hour ago|an hour ago/);
 		});
 
-		it("faviconが表示される", () => {
+		it("displays favicon", () => {
 			const favicon = element.shadowRoot?.querySelector(
 				".item-favicon",
 			) as HTMLImageElement;
@@ -61,7 +61,7 @@ describe("ReadingItem", () => {
 			expect(favicon?.alt).toBe("");
 		});
 
-		it("faviconがない場合はデフォルトアイコンが表示される", async () => {
+		it("displays default icon when favicon is missing", async () => {
 			element.item = fixtures.itemWithoutFavicon;
 			await waitForUpdates(element);
 
@@ -72,15 +72,15 @@ describe("ReadingItem", () => {
 			expect(defaultIcon).toBeTruthy();
 		});
 
-		it("削除ボタンが表示される", () => {
+		it("displays delete button", () => {
 			const deleteButton = element.shadowRoot?.querySelector(".delete-button");
 			expect(deleteButton).toBeTruthy();
 			expect(deleteButton?.getAttribute("aria-label")).toBe("Delete item");
 		});
 	});
 
-	describe("クリックイベント", () => {
-		it("通常クリックでitem-clickイベントが発火する", async () => {
+	describe("Click events", () => {
+		it("fires item-click event on normal click", async () => {
 			const listener = vi.fn();
 			element.addEventListener("item-click", listener);
 
@@ -100,7 +100,7 @@ describe("ReadingItem", () => {
 			);
 		});
 
-		it("Ctrl+クリックでnewTab=trueのイベントが発火する", async () => {
+		it("fires event with newTab=true on Ctrl+click", async () => {
 			const listener = vi.fn();
 			element.addEventListener("item-click", listener);
 
@@ -124,7 +124,7 @@ describe("ReadingItem", () => {
 			);
 		});
 
-		it("Cmd+クリック（Mac）でnewTab=trueのイベントが発火する", async () => {
+		it("fires event with newTab=true on Cmd+click (Mac)", async () => {
 			const listener = vi.fn();
 			element.addEventListener("item-click", listener);
 
@@ -148,7 +148,7 @@ describe("ReadingItem", () => {
 			);
 		});
 
-		it("削除ボタンクリックでitem-deleteイベントが発火する", async () => {
+		it("fires item-delete event on delete button click", async () => {
 			const listener = vi.fn();
 			element.addEventListener("item-delete", listener);
 
@@ -167,7 +167,7 @@ describe("ReadingItem", () => {
 			);
 		});
 
-		it("削除ボタンクリック時はitem-clickイベントが発火しない", async () => {
+		it("does not fire item-click event when delete button is clicked", async () => {
 			const clickListener = vi.fn();
 			const deleteListener = vi.fn();
 			element.addEventListener("item-click", clickListener);
@@ -183,13 +183,13 @@ describe("ReadingItem", () => {
 		});
 	});
 
-	describe("favicon表示", () => {
-		it("favicon読み込みエラー時はデフォルトアイコンが表示される", async () => {
+	describe("Favicon display", () => {
+		it("displays default icon on favicon load error", async () => {
 			const favicon = element.shadowRoot?.querySelector(
 				".item-favicon",
 			) as HTMLImageElement;
 
-			// エラーイベントをシミュレート
+			// Simulate error event
 			favicon.dispatchEvent(new Event("error"));
 			await waitForUpdates(element);
 
@@ -200,7 +200,7 @@ describe("ReadingItem", () => {
 			expect(defaultIcon).toBeTruthy();
 		});
 
-		it("DuckDuckGo favicon APIのURLが正しく生成される", async () => {
+		it("generates correct DuckDuckGo favicon API URL", async () => {
 			const testUrl = "https://github.com/user/repo";
 			element.item = { ...mockItem, url: testUrl };
 			await waitForUpdates(element);
@@ -215,8 +215,8 @@ describe("ReadingItem", () => {
 		});
 	});
 
-	describe("時間表示", () => {
-		it("1分未満は'Just now'と表示される", async () => {
+	describe("Time display", () => {
+		it("displays 'Just now' for less than 1 minute", async () => {
 			element.item = { ...mockItem, addedAt: Date.now() - 30000 };
 			await waitForUpdates(element);
 
@@ -224,24 +224,24 @@ describe("ReadingItem", () => {
 			expect(time?.textContent).toBe("Just now");
 		});
 
-		it("1時間未満は分単位で表示される", async () => {
-			element.item = { ...mockItem, addedAt: Date.now() - 1800000 }; // 30分前
+		it("displays in minutes for less than 1 hour", async () => {
+			element.item = { ...mockItem, addedAt: Date.now() - 1800000 }; // 30 minutes ago
 			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
 			expect(time?.textContent).toMatch(/30 minutes ago/);
 		});
 
-		it("24時間未満は時間単位で表示される", async () => {
-			element.item = { ...mockItem, addedAt: Date.now() - 7200000 }; // 2時間前
+		it("displays in hours for less than 24 hours", async () => {
+			element.item = { ...mockItem, addedAt: Date.now() - 7200000 }; // 2 hours ago
 			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
 			expect(time?.textContent).toMatch(/2 hours ago/);
 		});
 
-		it("24時間以上は日付で表示される", async () => {
-			element.item = { ...mockItem, addedAt: Date.now() - 172800000 }; // 2日前
+		it("displays in days for 24 hours or more", async () => {
+			element.item = { ...mockItem, addedAt: Date.now() - 172800000 }; // 2 days ago
 			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
@@ -249,8 +249,8 @@ describe("ReadingItem", () => {
 		});
 	});
 
-	describe("エッジケース", () => {
-		it("favicon読み込みのタイムアウト処理", async () => {
+	describe("Edge cases", () => {
+		it("handles favicon loading timeout", async () => {
 			const item: ReadingItem = {
 				id: "timeout-test",
 				url: "https://example.com",
@@ -266,20 +266,20 @@ describe("ReadingItem", () => {
 				".item-favicon",
 			) as HTMLImageElement;
 
-			// エラーイベントをシミュレート（タイムアウト）
+			// Simulate error event (timeout)
 			if (favicon) {
 				const errorEvent = new Event("error");
 				favicon.dispatchEvent(errorEvent);
 				await waitForUpdates(element);
 
-				// デフォルトアイコンが表示されることを確認
+				// Verify default icon is displayed
 				const defaultIcon = element.shadowRoot?.querySelector(".default-icon");
 				expect(defaultIcon).toBeDefined();
 			}
 		});
 
-		it("未来の日付の時間表示が正しく処理される", async () => {
-			const futureDate = Date.now() + 86400000 * 365; // 1年後
+		it("correctly handles future date time display", async () => {
+			const futureDate = Date.now() + 86400000 * 365; // 1 year later
 			const item: ReadingItem = {
 				id: "future-test",
 				url: "https://example.com",
@@ -291,7 +291,7 @@ describe("ReadingItem", () => {
 			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
-			// 負の経過時間でもエラーにならないことを確認
+			// Verify no error occurs with negative elapsed time
 			expect(time?.textContent).toBeDefined();
 		});
 	});

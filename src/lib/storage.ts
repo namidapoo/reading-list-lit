@@ -5,7 +5,7 @@ const STORAGE_KEY = "items";
 const MAX_ITEMS = 512;
 const MAX_TITLE_LENGTH = 255;
 
-// Chrome Storage APIの型定義を強化
+// Enhanced Chrome Storage API type definitions
 interface StorageData {
 	[STORAGE_KEY]: ReadingItem[];
 }
@@ -17,10 +17,10 @@ export class ReadingListStorage {
 	}) => void;
 
 	constructor() {
-		// ストレージ変更の監視
+		// Monitor storage changes
 		this.storageListener = (changes) => {
 			if (changes[STORAGE_KEY]) {
-				this.cache = null; // キャッシュをクリア
+				this.cache = null; // Clear cache
 			}
 		};
 		chrome.storage.sync.onChanged.addListener(this.storageListener);
@@ -28,23 +28,23 @@ export class ReadingListStorage {
 
 	async addItem(url: string, title: string): Promise<ReadingItem> {
 		try {
-			// URL検証
+			// Validate URL
 			if (!this.isValidUrl(url)) {
 				throw new ReadingListError(ErrorCode.INVALID_URL, "Invalid URL");
 			}
 
-			// タイトルのサニタイズと切り詰め
+			// Sanitize and truncate title
 			const sanitizedTitle = this.sanitizeTitle(title);
 
-			// ソートされていない元のデータを取得
+			// Get unsorted original data
 			const result = await chrome.storage.sync.get<StorageData>([STORAGE_KEY]);
 			const items: ReadingItem[] = result[STORAGE_KEY] || [];
 
-			// 既存のアイテムをチェック（重複URL）
+			// Check for existing items (duplicate URL)
 			const existingItemIndex = items.findIndex((item) => item.url === url);
 
 			if (existingItemIndex !== -1) {
-				// 重複URLの場合は更新
+				// Update if duplicate URL
 				items[existingItemIndex] = {
 					...items[existingItemIndex],
 					title: sanitizedTitle,
@@ -54,7 +54,7 @@ export class ReadingListStorage {
 				return items[existingItemIndex];
 			}
 
-			// ストレージ制限チェック
+			// Check storage limit
 			if (items.length >= MAX_ITEMS) {
 				throw new ReadingListError(
 					ErrorCode.STORAGE_FULL,
@@ -62,7 +62,7 @@ export class ReadingListStorage {
 				);
 			}
 
-			// 新規アイテム作成
+			// Create new item
 			const newItem: ReadingItem = {
 				id: this.generateId(),
 				url,
@@ -76,7 +76,7 @@ export class ReadingListStorage {
 
 			return newItem;
 		} catch (error) {
-			// ストレージクォータエラーの詳細な処理
+			// Detailed handling of storage quota errors
 			if (error instanceof Error && error.name === "QuotaExceededError") {
 				const usage = await chrome.storage.sync.getBytesInUse();
 				const quota = chrome.storage.sync.QUOTA_BYTES;
@@ -150,7 +150,7 @@ export class ReadingListStorage {
 	private isValidUrl(url: string): boolean {
 		try {
 			const parsed = new URL(url);
-			// javascriptプロトコルなどの危険なURLを拒否
+			// Reject dangerous URLs like javascript protocol
 			if (!["http:", "https:"].includes(parsed.protocol)) {
 				return false;
 			}
@@ -161,7 +161,7 @@ export class ReadingListStorage {
 	}
 
 	private sanitizeTitle(title: string): string {
-		// HTMLタグを除去し、文字数制限を適用
+		// Remove HTML tags and apply character limit
 		const sanitized = title.replace(/<[^>]*>/g, "").trim();
 		return sanitized.length > MAX_TITLE_LENGTH
 			? sanitized.substring(0, MAX_TITLE_LENGTH)
@@ -187,7 +187,7 @@ export class ReadingListStorage {
 	}
 
 	cleanup() {
-		// リスナーを削除してメモリリークを防ぐ
+		// Remove listener to prevent memory leaks
 		if (this.storageListener) {
 			chrome.storage.sync.onChanged.removeListener(this.storageListener);
 			this.storageListener = undefined;

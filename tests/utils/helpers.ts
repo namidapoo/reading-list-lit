@@ -2,7 +2,7 @@ import { vi } from "vitest";
 import type { ReadingItem } from "@/types";
 
 /**
- * DOMテスト用のコンテナ要素を作成
+ * Create container element for DOM testing
  */
 export function createTestContainer(): HTMLDivElement {
 	const container = document.createElement("div");
@@ -11,7 +11,7 @@ export function createTestContainer(): HTMLDivElement {
 }
 
 /**
- * テストコンテナをクリーンアップ
+ * Clean up test container
  */
 export function cleanupTestContainer(container: HTMLElement): void {
 	if (container.parentNode) {
@@ -20,7 +20,7 @@ export function cleanupTestContainer(container: HTMLElement): void {
 }
 
 /**
- * Chrome Storage APIのモックを作成
+ * Create Chrome Storage API mock
  */
 export function createChromeStorageMock() {
 	return {
@@ -57,7 +57,7 @@ export function createChromeStorageMock() {
 }
 
 /**
- * デフォルトのChrome Storage応答をセットアップ
+ * Set up default Chrome Storage responses
  */
 export function setupDefaultChromeStorageResponses(
 	mockChrome: ReturnType<typeof createChromeStorageMock>,
@@ -89,7 +89,7 @@ export function setupDefaultChromeStorageResponses(
 }
 
 /**
- * 非同期更新を待つヘルパー
+ * Helper to wait for async updates
  */
 export async function waitForUpdates(
 	element?: { updateComplete: Promise<unknown> },
@@ -104,14 +104,14 @@ export async function waitForUpdates(
 }
 
 /**
- * デバウンス処理を待つヘルパー
+ * Helper to wait for debounce processing
  */
 export async function waitForDebounce(ms = 150): Promise<void> {
 	await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
- * エラーイベントをシミュレート
+ * Simulate error event
  */
 export function simulateError(element: HTMLElement, message = "Test error") {
 	const errorEvent = new CustomEvent("error", {
@@ -122,7 +122,7 @@ export function simulateError(element: HTMLElement, message = "Test error") {
 }
 
 /**
- * カスタムイベントの発火を待つ
+ * Wait for custom event to fire
  */
 export function waitForEvent<T = unknown>(
 	element: EventTarget,
@@ -145,7 +145,7 @@ export function waitForEvent<T = unknown>(
 }
 
 /**
- * 完全なChrome APIモックを作成
+ * Create complete Chrome API mock
  */
 export function createFullChromeMock() {
 	return {
@@ -198,7 +198,7 @@ export function createFullChromeMock() {
 }
 
 /**
- * ReadingListStorageクラスのモックを作成
+ * Create ReadingListStorage class mock
  */
 export function createStorageMock(defaultItems: ReadingItem[] = []) {
 	return {
@@ -215,7 +215,7 @@ export function createStorageMock(defaultItems: ReadingItem[] = []) {
 }
 
 /**
- * BackgroundServiceのモックを作成
+ * Create BackgroundService mock
  */
 export function createBackgroundServiceMock() {
 	return {
@@ -227,7 +227,7 @@ export function createBackgroundServiceMock() {
 }
 
 /**
- * Chrome APIをグローバルに設定
+ * Set up Chrome API globally
  */
 export function setupGlobalChrome(
 	mockChrome?: ReturnType<typeof createFullChromeMock>,

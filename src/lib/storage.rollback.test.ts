@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReadingItem } from "@/types";
 import { ReadingListStorage } from "./storage";
 
-describe("ストレージロールバックのテスト", () => {
+describe("Storage Rollback Tests", () => {
 	let storage: ReadingListStorage;
 	let mockChrome: {
 		storage: {
@@ -41,7 +41,7 @@ describe("ストレージロールバックのテスト", () => {
 			},
 		};
 		globalThis.chrome = mockChrome as unknown as typeof chrome;
-		// 各テストで新しいインスタンスを作成してキャッシュをクリア
+		// Create new instance for each test to clear cache
 		storage = new ReadingListStorage();
 	});
 
@@ -49,8 +49,8 @@ describe("ストレージロールバックのテスト", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("部分的な書き込み失敗", () => {
-		it("ストレージの書き込みが失敗した場合、エラーをスローする", async () => {
+	describe("Partial write failures", () => {
+		it("throws error when storage write fails", async () => {
 			const initialItems: ReadingItem[] = [
 				{
 					id: "item-1",
@@ -68,7 +68,7 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// 書き込み失敗をシミュレート
+			// Simulate write failure
 			mockChrome.storage.sync.set.mockImplementation((_data, callback) => {
 				mockChrome.runtime.lastError = {
 					message: "Storage quota exceeded",
@@ -80,16 +80,16 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// エラーがスローされることを確認
+			// Verify error is thrown
 			await expect(
 				storage.addItem("https://example.com/2", "Item 2"),
 			).rejects.toThrow("Failed to save items");
 
-			// エラーが正しくスローされることが確認できれば十分
-			// (実際の実装では、saveItemsでエラーが発生した場合キャッシュは更新されない)
+			// It's sufficient to verify that the error is thrown correctly
+			// (In actual implementation, cache is not updated when saveItems fails)
 		});
 
-		it("複数アイテムの追加中に失敗した場合、全てロールバックされる", async () => {
+		it("rolls back all changes when multiple item addition fails", async () => {
 			const initialItems: ReadingItem[] = [];
 			let setCallCount = 0;
 
@@ -101,7 +101,7 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// 2回目の書き込みで失敗するように設定
+			// Set to fail on second write
 			mockChrome.storage.sync.set.mockImplementation((_data, callback) => {
 				setCallCount++;
 				if (setCallCount === 2) {
@@ -123,7 +123,7 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// 複数のアイテムを追加（バッチ処理をシミュレート）
+			// Add multiple items (simulate batch processing)
 			const addPromises = [
 				storage.addItem("https://example.com/1", "Item 1"),
 				storage.addItem("https://example.com/2", "Item 2"),
@@ -131,12 +131,12 @@ describe("ストレージロールバックのテスト", () => {
 
 			const results = await Promise.allSettled(addPromises);
 
-			// 少なくとも1つが失敗することを確認
+			// Verify at least one fails
 			const failures = results.filter((r) => r.status === "rejected");
 			expect(failures.length).toBeGreaterThan(0);
 		});
 
-		it("削除操作が失敗した場合、元の状態が保持される", async () => {
+		it("preserves original state when delete operation fails", async () => {
 			const itemToDelete: ReadingItem = {
 				id: "item-to-delete",
 				url: "https://example.com/delete",
@@ -154,7 +154,7 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// 削除失敗をシミュレート
+			// Simulate delete failure
 			mockChrome.storage.sync.set.mockImplementation((_data, callback) => {
 				mockChrome.runtime.lastError = {
 					message: "Permission denied",
@@ -166,12 +166,12 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// エラーがスローされることを確認
+			// Verify error is thrown
 			await expect(storage.removeItem(itemToDelete.id)).rejects.toThrow(
 				"Failed to save items",
 			);
 
-			// アイテムがまだ存在することを確認
+			// Verify item still exists
 			mockChrome.runtime.lastError = null;
 			const items = await storage.getItems();
 			expect(items).toHaveLength(1);
@@ -179,8 +179,8 @@ describe("ストレージロールバックのテスト", () => {
 		});
 	});
 
-	describe("トランザクション的な操作", () => {
-		it("複数の操作を含むトランザクションが途中で失敗した場合、全てロールバックされる", async () => {
+	describe("Transactional operations", () => {
+		it("rolls back all operations when transaction fails midway", async () => {
 			const initialItems: ReadingItem[] = [
 				{
 					id: "item-1",
@@ -212,7 +212,7 @@ describe("ストレージロールバックのテスト", () => {
 				operationCount++;
 				operationLog.push(`set-${operationCount}`);
 
-				// 3回目の操作で失敗
+				// Fail on third operation
 				if (operationCount === 3) {
 					mockChrome.runtime.lastError = {
 						message: "Transaction failed",
@@ -232,7 +232,7 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// 複数の操作を実行
+			// Execute multiple operations
 			const operations = [
 				storage.removeItem("item-1"),
 				storage.addItem("https://example.com/3", "Item 3"),
@@ -241,19 +241,19 @@ describe("ストレージロールバックのテスト", () => {
 
 			const results = await Promise.allSettled(operations);
 
-			// 失敗した操作があることを確認
+			// Verify some operations failed
 			const failures = results.filter((r) => r.status === "rejected");
 			expect(failures.length).toBeGreaterThan(0);
 
-			// ログを確認
+			// Verify log
 			expect(operationLog).toContain("get");
 			expect(operationLog).toContain("set-1");
 		});
 	});
 
-	describe("ストレージ容量制限", () => {
-		it("QUOTA_BYTES_PER_ITEMを超えるアイテムは追加できない", async () => {
-			// 非常に長いタイトルを生成（100KB以上）
+	describe("Storage capacity limits", () => {
+		it("cannot add items exceeding QUOTA_BYTES_PER_ITEM", async () => {
+			// Generate very long title (over 100KB)
 			const longTitle = "a".repeat(110000);
 
 			mockChrome.storage.sync.get.mockImplementation((_key, callback) => {
@@ -282,8 +282,8 @@ describe("ストレージロールバックのテスト", () => {
 			).rejects.toThrow("Failed to save items");
 		});
 
-		it("QUOTA_BYTESを超える場合、追加が失敗する", async () => {
-			// ストレージがほぼ満杯の状態をシミュレート
+		it("fails to add when exceeding QUOTA_BYTES", async () => {
+			// Simulate storage nearly full
 			const existingItems: ReadingItem[] = [];
 			for (let i = 0; i < 500; i++) {
 				existingItems.push({
@@ -319,14 +319,14 @@ describe("ストレージロールバックのテスト", () => {
 		});
 	});
 
-	describe("同期エラーの処理", () => {
-		it("ネットワークエラー時にリトライ機構が動作する", async () => {
+	describe("Sync error handling", () => {
+		it("retry mechanism works on network errors", async () => {
 			let attemptCount = 0;
 
 			mockChrome.storage.sync.get.mockImplementation((_key, callback) => {
 				attemptCount++;
 				if (attemptCount < 3) {
-					// 最初の2回は失敗
+					// First two attempts fail
 					mockChrome.runtime.lastError = {
 						message: "Network error",
 					};
@@ -336,7 +336,7 @@ describe("ストレージロールバックのテスト", () => {
 						return Promise.reject(new Error("Network error"));
 					}
 				} else {
-					// 3回目で成功
+					// Success on third attempt
 					mockChrome.runtime.lastError = null;
 					if (callback) {
 						callback({ items: [] });
@@ -354,18 +354,18 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// リトライ機構がある場合は成功、ない場合はエラー
+			// Success if retry mechanism exists, error otherwise
 			try {
 				const items = await storage.getItems();
 				expect(items).toEqual([]);
 				expect(attemptCount).toBe(3);
 			} catch (error) {
-				// リトライ機構がない場合
+				// If no retry mechanism
 				expect(error).toBeDefined();
 			}
 		});
 
-		it("同期競合が発生した場合、適切にハンドリングされる", async () => {
+		it("handles sync conflicts appropriately", async () => {
 			const localItems: ReadingItem[] = [
 				{
 					id: "local-1",
@@ -394,7 +394,7 @@ describe("ストレージロールバックのテスト", () => {
 						return Promise.resolve({ items: localItems });
 					}
 				} else {
-					// 2回目の呼び出しではリモートの変更を反映
+					// Second call reflects remote changes
 					if (callback) {
 						callback({ items: remoteItems });
 					} else {
@@ -404,7 +404,7 @@ describe("ストレージロールバックのテスト", () => {
 			});
 
 			mockChrome.storage.sync.set.mockImplementation((_data, callback) => {
-				// 同期競合をシミュレート
+				// Simulate sync conflict
 				mockChrome.runtime.lastError = {
 					message: "Sync conflict detected",
 				};
@@ -415,7 +415,7 @@ describe("ストレージロールバックのテスト", () => {
 				}
 			});
 
-			// 競合が検出されることを確認
+			// Verify conflict is detected
 			await expect(
 				storage.addItem("https://example.com/new", "New Item"),
 			).rejects.toThrow("Failed to save items");

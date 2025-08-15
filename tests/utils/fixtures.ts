@@ -1,7 +1,7 @@
 import type { ReadingItem } from "@/types";
 
 /**
- * 基本的なReadingItemを生成
+ * Generate basic ReadingItem
  */
 export function createMockItem(overrides?: Partial<ReadingItem>): ReadingItem {
 	return {
@@ -15,7 +15,7 @@ export function createMockItem(overrides?: Partial<ReadingItem>): ReadingItem {
 }
 
 /**
- * 複数のReadingItemを生成
+ * Generate multiple ReadingItems
  */
 export function createMockItems(
 	count: number,
@@ -32,75 +32,75 @@ export function createMockItems(
 }
 
 /**
- * テスト用の固定データセット
+ * Fixed dataset for testing
  */
 export const fixtures = {
-	// 基本的なアイテム
+	// Basic item
 	basicItem: createMockItem(),
 
-	// faviconなしのアイテム
+	// Item without favicon
 	itemWithoutFavicon: createMockItem({
 		faviconUrl: undefined,
 	}),
 
-	// 長いタイトルのアイテム
+	// Item with long title
 	itemWithLongTitle: createMockItem({
 		title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ".repeat(
 			10,
 		),
 	}),
 
-	// 長いURLのアイテム
+	// Item with long URL
 	itemWithLongUrl: createMockItem({
 		url: `https://example.com/very/long/path/${"segment/".repeat(100)}`,
 	}),
 
-	// 日本語を含むアイテム
+	// Item with Japanese text
 	itemWithJapanese: createMockItem({
-		title: "日本語のタイトル",
-		url: "https://example.com/日本語/パス",
+		title: "Japanese Title",
+		url: "https://example.com/japanese/path",
 	}),
 
-	// 絵文字を含むアイテム
+	// Item with emojis
 	itemWithEmoji: createMockItem({
 		title: "Article with emojis 🎉🚀🌟",
 		url: "https://example.com/emoji/🎉",
 	}),
 
-	// 特殊文字を含むアイテム
+	// Item with special characters
 	itemWithSpecialChars: createMockItem({
 		title: "Title with <script>alert('xss')</script>",
 		url: "https://example.com/path?query=<>&\"'",
 	}),
 
-	// 未来の日付のアイテム
+	// Item with future date
 	itemFromFuture: createMockItem({
-		addedAt: Date.now() + 86400000, // 1日後
+		addedAt: Date.now() + 86400000, // 1 day later
 	}),
 
-	// 過去の日付のアイテム
+	// Item with past date
 	itemFromPast: createMockItem({
-		addedAt: Date.now() - 86400000 * 365, // 1年前
+		addedAt: Date.now() - 86400000 * 365, // 1 year ago
 	}),
 
-	// JavaScriptプロトコルを含む悪意のあるアイテム
+	// Malicious item with JavaScript protocol
 	maliciousItem: createMockItem({
 		url: "javascript:alert('XSS')",
 		faviconUrl: "javascript:alert('XSS')",
 	}),
 
-	// 複数アイテムのセット
+	// Set of multiple items
 	itemList: createMockItems(5),
 
-	// 大量アイテムのセット（パフォーマンステスト用）
+	// Large set of items (for performance testing)
 	largeItemList: createMockItems(500),
 
-	// ストレージ上限のアイテムセット
+	// Item set at storage limit
 	maxItemList: createMockItems(512),
 };
 
 /**
- * Chrome APIエラーメッセージ
+ * Chrome API error messages
  */
 export const errorMessages = {
 	quotaExceeded: "QUOTA_BYTES quota exceeded",
@@ -113,7 +113,7 @@ export const errorMessages = {
 };
 
 /**
- * URLパターンのテストケース
+ * URL pattern test cases
  */
 export const urlPatterns = {
 	valid: [
@@ -135,7 +135,7 @@ export const urlPatterns = {
 		"file:///etc/passwd",
 	],
 	special: [
-		"https://example.com/日本語/パス",
+		"https://example.com/japanese/path",
 		"https://example.com/emoji/🎉🚀",
 		"https://example.com/path?q=hello+world",
 		"https://example.com/path?q=hello%20world",
@@ -145,7 +145,7 @@ export const urlPatterns = {
 };
 
 /**
- * 検索クエリのテストケース
+ * Search query test cases
  */
 export const searchQueries = {
 	normal: ["test", "article", "example", "hello world"],
@@ -159,12 +159,12 @@ export const searchQueries = {
 		"end$",
 		"escape\\test",
 	],
-	unicode: ["日本語", "にほんご", "🎉", "検索 🔍 テスト 🎉"],
+	unicode: ["Japanese", "nihongo", "🎉", "Search 🔍 Test 🎉"],
 	edge: ["", "   ", "\n", "\t", "a".repeat(1000)],
 };
 
 /**
- * タイミング定数
+ * Timing constants
  */
 export const timings = {
 	debounce: 100,

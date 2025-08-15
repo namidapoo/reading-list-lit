@@ -261,7 +261,7 @@ export class ErrorMessage extends LitElement {
 	}
 
 	private getIcon() {
-		// すべてのタイプで同じoctagon-alertアイコンを使用
+		// Use the same octagon-alert icon for all types
 		return html`<span class="icon">${octagonAlertIcon()}</span>`;
 	}
 

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReadingItem } from "@/types";
 import { ReadingListStorage } from "./storage";
 
-describe("Race Conditionのテスト", () => {
+describe("Race Condition Tests", () => {
 	let storage: ReadingListStorage;
 	let mockChrome: {
 		storage: {
@@ -46,8 +46,8 @@ describe("Race Conditionのテスト", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("同時実行時の競合状態", () => {
-		it("複数の追加操作が同時に実行されても正しく処理される", async () => {
+	describe("Concurrent execution race conditions", () => {
+		it("handles multiple concurrent add operations correctly", async () => {
 			const initialItems: ReadingItem[] = [
 				{
 					id: "existing-1",
@@ -70,7 +70,7 @@ describe("Race Conditionのテスト", () => {
 			let setCallCount = 0;
 			mockChrome.storage.sync.set.mockImplementation((_data, callback) => {
 				setCallCount++;
-				// 各呼び出しに異なる遅延を設定してRace Conditionをシミュレート
+				// Set different delays for each call to simulate race condition
 				const delay = setCallCount === 1 ? 50 : 10;
 				if (callback) {
 					setTimeout(() => callback(), delay);
@@ -81,24 +81,24 @@ describe("Race Conditionのテスト", () => {
 				}
 			});
 
-			// 同時に2つのアイテムを追加
+			// Add two items concurrently
 			const addPromise1 = storage.addItem("https://example.com/2", "Item 2");
 
 			const addPromise2 = storage.addItem("https://example.com/3", "Item 3");
 
 			const [result1, result2] = await Promise.all([addPromise1, addPromise2]);
 
-			// 両方のアイテムが正しく追加されたことを確認
+			// Verify both items were added correctly
 			expect(result1).toBeDefined();
 			expect(result2).toBeDefined();
 			expect(result1.url).toBe("https://example.com/2");
 			expect(result2.url).toBe("https://example.com/3");
 
-			// setが2回呼ばれたことを確認
+			// Verify set was called twice
 			expect(mockChrome.storage.sync.set).toHaveBeenCalledTimes(2);
 		});
 
-		it("削除と追加が同時に実行されても正しく処理される", async () => {
+		it("handles concurrent delete and add operations correctly", async () => {
 			const initialItems: ReadingItem[] = [
 				{
 					id: "item-1",
@@ -132,7 +132,7 @@ describe("Race Conditionのテスト", () => {
 				}
 			});
 
-			// 同時に削除と追加を実行
+			// Execute delete and add concurrently
 			const deletePromise = storage.removeItem("item-1");
 			const addPromise = storage.addItem("https://example.com/3", "Item 3");
 
@@ -141,13 +141,13 @@ describe("Race Conditionのテスト", () => {
 				addPromise,
 			]);
 
-			// 両方の操作が成功したことを確認
+			// Verify both operations succeeded
 			expect(deleteResult).toBeUndefined();
 			expect(addResult).toBeDefined();
 			expect(addResult.url).toBe("https://example.com/3");
 		});
 
-		it("同じURLの重複追加を防ぐ", async () => {
+		it("prevents duplicate additions of the same URL", async () => {
 			const initialItems: ReadingItem[] = [];
 
 			mockChrome.storage.sync.get.mockImplementation((_key, callback) => {
@@ -160,7 +160,7 @@ describe("Race Conditionのテスト", () => {
 
 			const addedItems: ReadingItem[] = [];
 			mockChrome.storage.sync.set.mockImplementation((data, callback) => {
-				// 追加されたアイテムを記録
+				// Record added items
 				if (data.items) {
 					addedItems.push(...data.items);
 				}
@@ -173,7 +173,7 @@ describe("Race Conditionのテスト", () => {
 				}
 			});
 
-			// 同じURLで同時に複数の追加を試行
+			// Attempt multiple concurrent additions of the same URL
 			const url = "https://example.com/duplicate";
 			const promises = [
 				storage.addItem(url, "Title 1"),
@@ -183,7 +183,7 @@ describe("Race Conditionのテスト", () => {
 
 			const results = await Promise.allSettled(promises);
 
-			// 少なくとも1つは成功し、残りは重複エラーになることを確認
+			// Verify at least one succeeds and others get duplicate errors
 			const successCount = results.filter(
 				(r) => r.status === "fulfilled",
 			).length;
@@ -196,7 +196,7 @@ describe("Race Conditionのテスト", () => {
 			expect(successCount + failureCount).toBe(3);
 		});
 
-		it("複数の削除操作が同時に実行されても正しく処理される", async () => {
+		it("handles multiple concurrent delete operations correctly", async () => {
 			const initialItems: ReadingItem[] = [
 				{
 					id: "item-1",
@@ -240,7 +240,7 @@ describe("Race Conditionのテスト", () => {
 				}
 			});
 
-			// 同時に複数のアイテムを削除
+			// Delete multiple items concurrently
 			const deletePromises = [
 				storage.removeItem("item-1"),
 				storage.removeItem("item-2"),
@@ -249,14 +249,14 @@ describe("Race Conditionのテスト", () => {
 
 			await Promise.all(deletePromises);
 
-			// 削除操作が呼ばれたことを確認
+			// Verify delete operations were called
 			expect(mockChrome.storage.sync.set).toHaveBeenCalled();
 
-			// 操作が成功したことを確認（具体的なアイテム数は非同期処理により変動する可能性がある）
+			// Verify operations succeeded (specific item count may vary due to async processing)
 			expect(mockChrome.storage.sync.set.mock.calls.length).toBeGreaterThan(0);
 		});
 
-		it("読み取りと書き込みが同時に実行されても正しく処理される", async () => {
+		it("handles concurrent read and write operations correctly", async () => {
 			const initialItems: ReadingItem[] = [
 				{
 					id: "item-1",
@@ -268,7 +268,7 @@ describe("Race Conditionのテスト", () => {
 
 			let currentItems = [...initialItems];
 			mockChrome.storage.sync.get.mockImplementation((_key, callback) => {
-				// 読み取りに遅延を追加
+				// Add delay to read operation
 				if (callback) {
 					setTimeout(() => callback({ items: currentItems }), 20);
 				} else {
@@ -289,7 +289,7 @@ describe("Race Conditionのテスト", () => {
 				}
 			});
 
-			// 同時に読み取りと書き込みを実行
+			// Execute read and write concurrently
 			const readPromise = storage.getItems();
 			const writePromise = storage.addItem("https://example.com/2", "Item 2");
 
@@ -298,18 +298,18 @@ describe("Race Conditionのテスト", () => {
 				writePromise,
 			]);
 
-			// 読み取り結果が初期状態を反映していることを確認
+			// Verify read result reflects initial state
 			expect(readResult).toHaveLength(1);
 			expect(readResult[0].url).toBe("https://example.com/1");
 
-			// 書き込みが成功したことを確認
+			// Verify write operation succeeded
 			expect(writeResult).toBeDefined();
 			expect(writeResult.url).toBe("https://example.com/2");
 		});
 	});
 
-	describe("ロック機構のテスト", () => {
-		it("操作のキューイングが正しく動作する", async () => {
+	describe("Lock mechanism tests", () => {
+		it("operation queuing works correctly", async () => {
 			const operations: string[] = [];
 
 			mockChrome.storage.sync.get.mockImplementation((_key, callback) => {
@@ -334,7 +334,7 @@ describe("Race Conditionのテスト", () => {
 				}
 			});
 
-			// 連続して操作を実行
+			// Execute operations sequentially
 			const promises = [];
 			for (let i = 0; i < 5; i++) {
 				promises.push(storage.addItem(`https://example.com/${i}`, `Item ${i}`));
@@ -342,10 +342,10 @@ describe("Race Conditionのテスト", () => {
 
 			await Promise.all(promises);
 
-			// 操作が期待数実行されたことを確認
+			// Verify expected number of operations executed
 			expect(operations).toHaveLength(10); // 5 get + 5 set
 
-			// getとsetが期待された数だけ呼ばれたことを確認
+			// Verify get and set were called expected number of times
 			const getCount = operations.filter((op) => op === "get").length;
 			const setCount = operations.filter((op) => op === "set").length;
 			expect(getCount).toBe(5);

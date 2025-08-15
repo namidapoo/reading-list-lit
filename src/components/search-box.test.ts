@@ -14,15 +14,15 @@ describe("SearchBox", () => {
 	let searchBox: SearchBox;
 
 	beforeEach(async () => {
-		// コンテナをクリーンアップ
+		// Clean up container
 		document.body.innerHTML = "";
 		container = createTestContainer();
 
-		// SearchBoxコンポーネントを作成
+		// Create SearchBox component
 		searchBox = document.createElement("search-box") as SearchBox;
 		container.appendChild(searchBox);
 
-		// コンポーネントの更新を待つ
+		// Wait for component updates
 		await waitForUpdates(searchBox);
 	});
 
@@ -31,21 +31,21 @@ describe("SearchBox", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("レンダリング", () => {
-		it("検索入力フィールドが表示される", async () => {
+	describe("Rendering", () => {
+		it("displays search input field", async () => {
 			const input = searchBox.shadowRoot?.querySelector("input[type='search']");
 
 			expect(input).toBeTruthy();
 			expect(input?.getAttribute("placeholder")).toBe("Search...");
 		});
 
-		it("検索アイコンが表示される", async () => {
+		it("displays search icon", async () => {
 			const icon = searchBox.shadowRoot?.querySelector(".search-icon");
 
 			expect(icon).toBeTruthy();
 		});
 
-		it("初期値が空文字列である", async () => {
+		it("has empty initial value", async () => {
 			const input = searchBox.shadowRoot?.querySelector(
 				"input[type='search']",
 			) as HTMLInputElement;
@@ -53,7 +53,7 @@ describe("SearchBox", () => {
 			expect(input?.value).toBe("");
 		});
 
-		it("valueプロパティで初期値を設定できる", async () => {
+		it("can set initial value with value property", async () => {
 			searchBox.value = "initial search";
 			await searchBox.updateComplete;
 
@@ -65,13 +65,13 @@ describe("SearchBox", () => {
 		});
 	});
 
-	describe("入力イベント", () => {
-		it("入力時にvalueプロパティが更新される", async () => {
+	describe("Input events", () => {
+		it("updates value property on input", async () => {
 			const input = searchBox.shadowRoot?.querySelector(
 				"input[type='search']",
 			) as HTMLInputElement;
 
-			// 入力をシミュレート
+			// Simulate input
 			input.value = "test search";
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 
@@ -80,22 +80,22 @@ describe("SearchBox", () => {
 			expect(searchBox.value).toBe("test search");
 		});
 
-		it("プログラムでvalueを変更してもイベントは発火しない", async () => {
+		it("does not fire event when value is changed programmatically", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
 			searchBox.value = "programmatic change";
 			await searchBox.updateComplete;
 
-			// デバウンス時間を待つ（プログラム的変更はイベントを発火しない）
+			// Wait for debounce time (programmatic changes don't fire events)
 			await waitForDebounce();
 
 			expect(listener).not.toHaveBeenCalled();
 		});
 	});
 
-	describe("search-changedイベント", () => {
-		it("入力時にsearch-changedイベントが発火する", async () => {
+	describe("search-changed event", () => {
+		it("fires search-changed event on input", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -106,7 +106,7 @@ describe("SearchBox", () => {
 			input.value = "search query";
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 
-			// デバウンス完了を待つ
+			// Wait for debounce to complete
 			await vi.waitFor(() => {
 				expect(listener).toHaveBeenCalledTimes(1);
 				expect(listener).toHaveBeenCalledWith(
@@ -117,7 +117,7 @@ describe("SearchBox", () => {
 			});
 		});
 
-		it("連続入力時はデバウンスされる", async () => {
+		it("debounces consecutive inputs", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -125,7 +125,7 @@ describe("SearchBox", () => {
 				"input[type='search']",
 			) as HTMLInputElement;
 
-			// 連続して3回入力
+			// Input 3 times consecutively
 			input.value = "a";
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 
@@ -139,10 +139,10 @@ describe("SearchBox", () => {
 			input.value = "abc";
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 
-			// デバウンス時間を待つ
+			// Wait for debounce time
 			await waitForDebounce();
 
-			// 最後の値のみでイベントが1回だけ発火する
+			// Event fires only once with the last value
 			expect(listener).toHaveBeenCalledTimes(1);
 			expect(listener).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -151,7 +151,7 @@ describe("SearchBox", () => {
 			);
 		});
 
-		it("100ms以内の連続入力はデバウンスされる", async () => {
+		it("debounces consecutive inputs within 100ms", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -159,7 +159,7 @@ describe("SearchBox", () => {
 				"input[type='search']",
 			) as HTMLInputElement;
 
-			// 50ms間隔で入力
+			// Input at 50ms intervals
 			const values = ["t", "te", "tes", "test"];
 			for (const value of values) {
 				input.value = value;
@@ -167,10 +167,10 @@ describe("SearchBox", () => {
 				await new Promise((resolve) => setTimeout(resolve, 50));
 			}
 
-			// デバウンス時間を待つ
+			// Wait for debounce time
 			await waitForDebounce();
 
-			// 最後の値のみでイベントが発火
+			// Event fires only with the last value
 			expect(listener).toHaveBeenCalledTimes(1);
 			expect(listener).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -180,8 +180,8 @@ describe("SearchBox", () => {
 		});
 	});
 
-	describe("クリア機能", () => {
-		it("値がある時にクリアボタンが表示される", async () => {
+	describe("Clear functionality", () => {
+		it("shows clear button when value exists", async () => {
 			searchBox.value = "some text";
 			await searchBox.updateComplete;
 
@@ -190,7 +190,7 @@ describe("SearchBox", () => {
 			expect(clearButton).toBeTruthy();
 		});
 
-		it("値が空の時はクリアボタンが表示されない", async () => {
+		it("hides clear button when value is empty", async () => {
 			searchBox.value = "";
 			await searchBox.updateComplete;
 
@@ -199,7 +199,7 @@ describe("SearchBox", () => {
 			expect(clearButton).toBeFalsy();
 		});
 
-		it("クリアボタンをクリックすると値がクリアされる", async () => {
+		it("clears value when clear button is clicked", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -213,7 +213,7 @@ describe("SearchBox", () => {
 			clearButton.click();
 			await searchBox.updateComplete;
 
-			// デバウンス時間を待つ
+			// Wait for debounce time
 			await waitForDebounce();
 
 			expect(searchBox.value).toBe("");
@@ -225,8 +225,8 @@ describe("SearchBox", () => {
 		});
 	});
 
-	describe("エッジケース", () => {
-		it("RegExp特殊文字を含む検索文字列を安全に処理する", async () => {
+	describe("Edge cases", () => {
+		it("safely handles search strings with RegExp special characters", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -237,27 +237,27 @@ describe("SearchBox", () => {
 					"input",
 				) as HTMLInputElement;
 
-				// 入力値を設定
+				// Set input value
 				input.value = query;
 				input.dispatchEvent(new Event("input"));
 				await searchBox.updateComplete;
 
-				// デバウンス時間を待つ
+				// Wait for debounce time
 				await new Promise((resolve) => setTimeout(resolve, 150));
 
-				// イベントが発火し、特殊文字がそのまま渡されることを確認
+				// Verify event fires and special characters are passed as-is
 				expect(listener).toHaveBeenCalledWith(
 					expect.objectContaining({
 						detail: { value: query },
 					}),
 				);
 
-				// クリア
+				// Clear
 				listener.mockClear();
 			}
 		});
 
-		it("非常に長い検索文字列（1000文字）を処理できる", async () => {
+		it("handles very long search strings (1000 characters)", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -270,7 +270,7 @@ describe("SearchBox", () => {
 			input.dispatchEvent(new Event("input"));
 			await searchBox.updateComplete;
 
-			// デバウンス時間を待つ
+			// Wait for debounce time
 			await waitForDebounce();
 
 			expect(listener).toHaveBeenCalledWith(
@@ -280,7 +280,7 @@ describe("SearchBox", () => {
 			);
 		});
 
-		it("日本語入力（IME）中でもイベントは発火する", async () => {
+		it("fires event even during IME (Japanese input) composition", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -288,33 +288,33 @@ describe("SearchBox", () => {
 				"input",
 			) as HTMLInputElement;
 
-			// IME入力開始（compositionstart）
+			// Start IME input (compositionstart)
 			input.dispatchEvent(new CompositionEvent("compositionstart"));
 
-			// IME入力中の文字入力
-			input.value = "にほんご";
+			// Input text during IME composition
+			input.value = "nihongo";
 			input.dispatchEvent(new Event("input"));
 			await searchBox.updateComplete;
 
-			// デバウンス時間を待つ
+			// Wait for debounce time
 			await waitForDebounce();
 
-			// IME入力中でもイベントは発火する（コンポーネントがIME制御を実装していないため）
+			// Event fires even during IME input (component doesn't implement IME control)
 			expect(listener).toHaveBeenCalledWith(
 				expect.objectContaining({
-					detail: { value: "にほんご" },
+					detail: { value: "nihongo" },
 				}),
 			);
 
-			// IME確定（compositionend）
+			// Confirm IME input (compositionend)
 			input.dispatchEvent(new CompositionEvent("compositionend"));
 		});
 
-		it("絵文字を含む検索文字列を処理できる", async () => {
+		it("handles search strings with emojis", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
-			const emojiQuery = "検索 🔍 テスト 🎉";
+			const emojiQuery = "search 🔍 test 🎉";
 			const input = searchBox.shadowRoot?.querySelector(
 				"input",
 			) as HTMLInputElement;
@@ -323,7 +323,7 @@ describe("SearchBox", () => {
 			input.dispatchEvent(new Event("input"));
 			await searchBox.updateComplete;
 
-			// デバウンス時間を待つ
+			// Wait for debounce time
 			await waitForDebounce();
 
 			expect(listener).toHaveBeenCalledWith(
@@ -333,7 +333,7 @@ describe("SearchBox", () => {
 			);
 		});
 
-		it("空白文字のみの検索でも正しく処理する", async () => {
+		it("correctly handles whitespace-only search", async () => {
 			const listener = vi.fn();
 			searchBox.addEventListener("search-changed", listener);
 
@@ -346,7 +346,7 @@ describe("SearchBox", () => {
 			input.dispatchEvent(new Event("input"));
 			await searchBox.updateComplete;
 
-			// デバウンス時間を待つ
+			// Wait for debounce time
 			await waitForDebounce();
 
 			expect(listener).toHaveBeenCalledTimes(1);

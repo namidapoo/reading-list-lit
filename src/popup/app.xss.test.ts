@@ -7,7 +7,7 @@ import {
 } from "@test-utils/helpers";
 import type { ReadingListPopup } from "./app";
 
-describe("検索ボックスのXSS対策", () => {
+describe("Search box XSS protection", () => {
 	let container: HTMLDivElement;
 
 	beforeEach(() => {
@@ -19,8 +19,8 @@ describe("検索ボックスのXSS対策", () => {
 		vi.clearAllMocks();
 	});
 
-	it("検索クエリに悪意のあるスクリプトが含まれても実行されない", async () => {
-		// Chrome API のモック
+	it("does not execute malicious scripts in search queries", async () => {
+		// Chrome API mock
 		const mockChrome = {
 			storage: {
 				sync: {
@@ -44,7 +44,7 @@ describe("検索ボックスのXSS対策", () => {
 		const searchBox = popup.shadowRoot?.querySelector("search-box");
 		const maliciousQuery = "<img src=x onerror=alert('XSS')>";
 
-		// alertが呼ばれないことを確認
+		// Verify alert is not called
 		const alertSpy = vi.spyOn(window, "alert");
 
 		searchBox?.dispatchEvent(

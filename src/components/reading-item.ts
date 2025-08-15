@@ -215,7 +215,7 @@ export class ReadingItemElement extends LitElement {
 	private showDefaultIcon = false;
 
 	private handleItemClick(event: MouseEvent) {
-		// 削除ボタンのクリックは無視
+		// Ignore clicks on delete button
 		if ((event.target as HTMLElement).closest(".delete-button")) {
 			return;
 		}

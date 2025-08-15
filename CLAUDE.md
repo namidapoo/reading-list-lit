@@ -2,76 +2,76 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## プロジェクト概要
+## Project Overview
 
-このプロジェクトは、Lit Web ComponentsとTypeScriptを使用したChrome拡張機能の読書リストアプリケーションです。ViteをビルドツールとしてBunパッケージマネージャーを使用しています。
+This project is a Chrome extension reading list application using Lit Web Components and TypeScript. It uses Vite as a build tool with Bun package manager.
 
-## 必須コマンド
+## Essential Commands
 
-### 開発
-
-```bash
-bun dev          # 開発サーバーを起動
-bun run build    # TypeScriptチェック後にプロダクションビルド
-bun preview      # ビルド済みアプリのプレビュー
-```
-
-### コード品質
+### Development
 
 ```bash
-bun check             # Biomeでフォーマットとlintを一括チェック（自動修正あり）
-bun format            # コードフォーマット
-bun lint              # Lintエラーの確認
-bun lint:fix          # Lintエラーの安全な自動修正
-bun lint:fix:unsafe   # Lintエラーの安全でない修正も含む自動修正
-bun check-types       # TypeScriptの型チェック（--noEmit）
+bun dev          # Start development server
+bun run build    # Production build after TypeScript check
+bun preview      # Preview built app
 ```
 
-### テスト
+### Code Quality
 
 ```bash
-bun run test         # Vitestテストを実行
-bun run test:watch   # テストをウォッチモードで実行
-bun run test:ui      # Vitest UIを起動
-bun run test:coverage # カバレッジレポート付きでテスト実行
+bun check             # Format and lint check with Biome (with auto-fix)
+bun format            # Code formatting
+bun lint              # Check lint errors
+bun lint:fix          # Safe auto-fix of lint errors
+bun lint:fix:unsafe   # Auto-fix including unsafe fixes for lint errors
+bun check-types       # TypeScript type check (--noEmit)
 ```
 
-## アーキテクチャとコード規約
+### Testing
 
-### Litコンポーネント構造
+```bash
+bun run test         # Run Vitest tests
+bun run test:watch   # Run tests in watch mode
+bun run test:ui      # Start Vitest UI
+bun run test:coverage # Run tests with coverage report
+```
 
-- カスタムエレメントは`@customElement`デコレーターを使用
-- プロパティは`@property`デコレーターで定義
-- スタイルは`static styles`で定義
-- 必ず`declare global`でHTMLElementTagNameMapに型を追加
+## Architecture and Code Conventions
 
-### コーディング規約
+### Lit Component Structure
 
-- Biome設定：タブインデント、ダブルクォート使用
-- TypeScript strict mode有効
-- experimentalDecoratorsとuseDefineForClassFieldsの特殊設定に注意
-- Lefthookでpre-commit時に自動フォーマット
-- `any`型の使用は避ける（型安全性を保つため）
-- Biomeのエラーや警告をignoreコメントで黙らせることは極力避ける（コード品質を保つため）
+- Custom elements use `@customElement` decorator
+- Properties are defined with `@property` decorator
+- Styles are defined with `static styles`
+- Always add types to HTMLElementTagNameMap with `declare global`
 
-### テスト環境
+### Coding Conventions
 
-- Vitest + Playwrightでブラウザ環境でのテスト
-- `@vitest/browser/context`のpageオブジェクトを使用
-- コンポーネントはdocument.bodyに直接マウントしてテスト
+- Biome configuration: tab indentation, double quotes
+- TypeScript strict mode enabled
+- Note special configuration for experimentalDecorators and useDefineForClassFields
+- Auto-format on pre-commit with Lefthook
+- Avoid using `any` type (to maintain type safety)
+- Avoid silencing Biome errors or warnings with ignore comments as much as possible (to maintain code quality)
 
-### 重要な設定
+### Test Environment
 
-- package.jsonのpreinstallスクリプトでBun使用を強制
-- Git hookはLefthookで管理（pre-commit/pre-push）
-- ViteでESモジュールベースの開発環境構築
+- Testing in browser environment with Vitest + Playwright
+- Use page object from `@vitest/browser/context`
+- Test components by mounting directly to document.body
 
-### コミットメッセージ規約
+### Important Configuration
 
-Conventional Commits形式に従ってください:
+- Force Bun usage with preinstall script in package.json
+- Git hooks managed with Lefthook (pre-commit/pre-push)
+- ES module-based development environment with Vite
+
+### Commit Message Convention
+
+Follow Conventional Commits format:
 
 ```
 <type>(<scope>): <explanation>
 ```
 
-タイプ: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`

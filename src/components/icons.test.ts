@@ -22,7 +22,7 @@ describe("Icons", () => {
 	});
 
 	describe("circlePlusIcon", () => {
-		it("デフォルトの色でSVGテンプレートを返す", () => {
+		it("returns SVG template with default colors", () => {
 			render(circlePlusIcon(), container);
 			const svg = container.querySelector("svg");
 			expect(svg).toBeDefined();
@@ -35,7 +35,7 @@ describe("Icons", () => {
 			expect(paths?.[1]?.getAttribute("stroke")).toBe("#fff");
 		});
 
-		it("カスタム色を適用できる", () => {
+		it("applies custom colors", () => {
 			render(circlePlusIcon("#FF0000", "#00FF00"), container);
 			const svg = container.querySelector("svg");
 
@@ -49,14 +49,14 @@ describe("Icons", () => {
 	});
 
 	describe("earthIcon", () => {
-		it("デフォルトの色でSVGテンプレートを返す", () => {
+		it("returns SVG template with default colors", () => {
 			render(earthIcon(), container);
 			const svg = container.querySelector("svg");
 			expect(svg).toBeDefined();
 			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
-		it("カスタム色を適用できる", () => {
+		it("applies custom colors", () => {
 			render(earthIcon("#FF0000"), container);
 			const svg = container.querySelector("svg");
 			expect(svg?.getAttribute("stroke")).toBe("#FF0000");
@@ -64,14 +64,14 @@ describe("Icons", () => {
 	});
 
 	describe("octagonAlertIcon", () => {
-		it("デフォルトの色でSVGテンプレートを返す", () => {
+		it("returns SVG template with default colors", () => {
 			render(octagonAlertIcon(), container);
 			const svg = container.querySelector("svg");
 			expect(svg).toBeDefined();
 			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
-		it("カスタム色を適用できる", () => {
+		it("applies custom colors", () => {
 			render(octagonAlertIcon("#00FF00"), container);
 			const svg = container.querySelector("svg");
 			expect(svg?.getAttribute("stroke")).toBe("#00FF00");
@@ -79,14 +79,14 @@ describe("Icons", () => {
 	});
 
 	describe("searchIcon", () => {
-		it("デフォルトの色でSVGテンプレートを返す", () => {
+		it("returns SVG template with default colors", () => {
 			render(searchIcon(), container);
 			const svg = container.querySelector("svg");
 			expect(svg).toBeDefined();
 			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
-		it("カスタム色を適用できる", () => {
+		it("applies custom colors", () => {
 			render(searchIcon("#0000FF"), container);
 			const svg = container.querySelector("svg");
 			expect(svg?.getAttribute("stroke")).toBe("#0000FF");
@@ -94,14 +94,14 @@ describe("Icons", () => {
 	});
 
 	describe("trashIcon", () => {
-		it("デフォルトの色でSVGテンプレートを返す", () => {
+		it("returns SVG template with default colors", () => {
 			render(trashIcon(), container);
 			const svg = container.querySelector("svg");
 			expect(svg).toBeDefined();
 			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
-		it("カスタム色を適用できる", () => {
+		it("applies custom colors", () => {
 			render(trashIcon("#FF00FF"), container);
 			const svg = container.querySelector("svg");
 			expect(svg?.getAttribute("stroke")).toBe("#FF00FF");
@@ -109,22 +109,22 @@ describe("Icons", () => {
 	});
 
 	describe("xIcon", () => {
-		it("デフォルトの色でSVGテンプレートを返す", () => {
+		it("returns SVG template with default colors", () => {
 			render(xIcon(), container);
 			const svg = container.querySelector("svg");
 			expect(svg).toBeDefined();
 			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
-		it("カスタム色を適用できる", () => {
+		it("applies custom colors", () => {
 			render(xIcon("#00FFFF"), container);
 			const svg = container.querySelector("svg");
 			expect(svg?.getAttribute("stroke")).toBe("#00FFFF");
 		});
 	});
 
-	describe("全アイコン共通", () => {
-		it("すべてのアイコンがSVG要素を描画する", () => {
+	describe("All icons common", () => {
+		it("all icons render SVG elements", () => {
 			const icons = [
 				circlePlusIcon(),
 				earthIcon(),
@@ -143,7 +143,7 @@ describe("Icons", () => {
 			}
 		});
 
-		it("すべてのアイコンがaria-hidden属性を持つ", () => {
+		it("all icons have aria-hidden attribute", () => {
 			const icons = [
 				circlePlusIcon(),
 				earthIcon(),

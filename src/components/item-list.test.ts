@@ -33,8 +33,8 @@ describe("ItemList", () => {
 		vi.clearAllMocks();
 	});
 
-	describe("空状態", () => {
-		it("アイテムがない時は空状態メッセージを表示する", async () => {
+	describe("Empty state", () => {
+		it("shows empty state message when no items", async () => {
 			itemList.items = [];
 			await waitForUpdates(itemList);
 
@@ -44,8 +44,8 @@ describe("ItemList", () => {
 		});
 	});
 
-	describe("アイテム表示", () => {
-		it("複数のアイテムが表示される", async () => {
+	describe("Item display", () => {
+		it("displays multiple items", async () => {
 			itemList.items = mockItems;
 			await waitForUpdates(itemList);
 
@@ -53,7 +53,7 @@ describe("ItemList", () => {
 			expect(items?.length).toBe(3);
 		});
 
-		it("各アイテムに正しいデータが渡される", async () => {
+		it("passes correct data to each item", async () => {
 			itemList.items = mockItems;
 			await waitForUpdates(itemList);
 
@@ -64,7 +64,7 @@ describe("ItemList", () => {
 			});
 		});
 
-		it("ローディング状態を表示できる", async () => {
+		it("can display loading state", async () => {
 			itemList.loading = true;
 			await waitForUpdates(itemList);
 
@@ -72,7 +72,7 @@ describe("ItemList", () => {
 			expect(loader).toBeTruthy();
 		});
 
-		it("ローディング中はアイテムが表示されない", async () => {
+		it("does not display items while loading", async () => {
 			itemList.items = mockItems;
 			itemList.loading = true;
 			await waitForUpdates(itemList);
@@ -85,8 +85,8 @@ describe("ItemList", () => {
 		});
 	});
 
-	describe("イベント伝播", () => {
-		it("アイテムクリックイベントが伝播される", async () => {
+	describe("Event propagation", () => {
+		it("propagates item click event", async () => {
 			const listener = vi.fn();
 			itemList.addEventListener("item-click", listener);
 
@@ -94,7 +94,7 @@ describe("ItemList", () => {
 			await waitForUpdates(itemList);
 
 			const firstItem = itemList.shadowRoot?.querySelector("reading-item");
-			// composed: trueを追加してShadow DOMを超えて伝播させる
+			// Add composed: true to propagate across Shadow DOM
 			firstItem?.dispatchEvent(
 				new CustomEvent("item-click", {
 					detail: { item: mockItems[0], newTab: false },
@@ -111,7 +111,7 @@ describe("ItemList", () => {
 			);
 		});
 
-		it("削除イベントが伝播される", async () => {
+		it("propagates delete event", async () => {
 			const listener = vi.fn();
 			itemList.addEventListener("item-delete", listener);
 
@@ -120,7 +120,7 @@ describe("ItemList", () => {
 
 			const secondItem =
 				itemList.shadowRoot?.querySelectorAll("reading-item")[1];
-			// composed: trueを追加してShadow DOMを超えて伝播させる
+			// Add composed: true to propagate across Shadow DOM
 			secondItem?.dispatchEvent(
 				new CustomEvent("item-delete", {
 					detail: { item: mockItems[1] },
@@ -138,8 +138,8 @@ describe("ItemList", () => {
 		});
 	});
 
-	describe("エラー状態", () => {
-		it("エラーメッセージを表示できる", async () => {
+	describe("Error state", () => {
+		it("can display error message", async () => {
 			itemList.error = "Failed to load items";
 			await waitForUpdates(itemList);
 
@@ -148,7 +148,7 @@ describe("ItemList", () => {
 			expect(errorMessage?.textContent).toContain("Failed to load items");
 		});
 
-		it("エラー時はアイテムが表示されない", async () => {
+		it("does not display items when error occurs", async () => {
 			itemList.items = mockItems;
 			itemList.error = "Error occurred";
 			await waitForUpdates(itemList);
@@ -161,8 +161,8 @@ describe("ItemList", () => {
 		});
 	});
 
-	describe("アクセシビリティ", () => {
-		it("ローディング時にスクリーンリーダー向けのライブリージョンが存在する", async () => {
+	describe("Accessibility", () => {
+		it("has live region for screen readers when loading", async () => {
 			itemList.loading = true;
 			await waitForUpdates(itemList);
 
@@ -173,7 +173,7 @@ describe("ItemList", () => {
 			expect(liveRegion?.textContent?.trim()).toBe("Loading items...");
 		});
 
-		it("アイテム表示時にスクリーンリーダー向けのライブリージョンが存在する", async () => {
+		it("has live region for screen readers when displaying items", async () => {
 			itemList.items = mockItems;
 			await waitForUpdates(itemList);
 
@@ -184,7 +184,7 @@ describe("ItemList", () => {
 			expect(liveRegion?.textContent?.trim()).toBe("3 items loaded");
 		});
 
-		it("ライブリージョンにsr-onlyクラスが適用されている", async () => {
+		it("applies sr-only class to live region", async () => {
 			itemList.items = mockItems;
 			await waitForUpdates(itemList);
 
@@ -192,27 +192,27 @@ describe("ItemList", () => {
 			expect(liveRegion?.classList.contains("sr-only")).toBe(true);
 		});
 
-		it("単数・複数形が正しく表示される", async () => {
-			// 0件の場合（複数形）
+		it("displays singular and plural forms correctly", async () => {
+			// 0 items (plural)
 			itemList.items = [];
 			await waitForUpdates(itemList);
 			let liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
 			expect(liveRegion?.textContent?.trim()).toBe("0 items loaded");
 
-			// 1件の場合（単数形）
+			// 1 item (singular)
 			itemList.items = [mockItems[0]];
 			await waitForUpdates(itemList);
 			liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
 			expect(liveRegion?.textContent?.trim()).toBe("1 item loaded");
 
-			// 2件以上の場合（複数形）
+			// 2 or more items (plural)
 			itemList.items = [mockItems[0], mockItems[1]];
 			await waitForUpdates(itemList);
 			liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
 			expect(liveRegion?.textContent?.trim()).toBe("2 items loaded");
 		});
 
-		it("アイテム数が変更されたときライブリージョンが更新される", async () => {
+		it("updates live region when item count changes", async () => {
 			itemList.items = [mockItems[0]];
 			await waitForUpdates(itemList);
 

@@ -46,7 +46,6 @@ export default defineConfig({
 			],
 		}),
 	],
-	// テスト設定
 	test: {
 		browser: {
 			enabled: true,

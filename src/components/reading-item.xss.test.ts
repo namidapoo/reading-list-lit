@@ -8,7 +8,7 @@ import {
 } from "@test-utils/helpers";
 import type { ReadingItemElement } from "./reading-item";
 
-describe("ReadingItemコンポーネントのXSS対策", () => {
+describe("ReadingItem component XSS protection", () => {
 	let container: HTMLDivElement;
 
 	beforeEach(() => {
@@ -20,7 +20,7 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		vi.clearAllMocks();
 	});
 
-	it("タイトルに悪意のあるスクリプトタグが含まれる場合、実行されない", async () => {
+	it("does not execute malicious script tags in title", async () => {
 		const maliciousItem = createMockItem({
 			id: "malicious-1",
 			title: "<script>alert('XSS')</script>Malicious Title",
@@ -33,18 +33,18 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		container.appendChild(element);
 		await waitForUpdates(element);
 
-		// スクリプトタグがテキストとして表示されることを確認
+		// Verify script tag is displayed as text
 		const titleElement = element.shadowRoot?.querySelector(".item-title");
 		expect(titleElement?.textContent).toBe(
 			"<script>alert('XSS')</script>Malicious Title",
 		);
 
-		// alertが呼ばれないことを確認
+		// Verify alert is not called
 		const alertSpy = vi.spyOn(window, "alert");
 		expect(alertSpy).not.toHaveBeenCalled();
 	});
 
-	it("URLに悪意のあるJavaScriptプロトコルが含まれる場合、実行されない", async () => {
+	it("does not execute malicious JavaScript protocol in URL", async () => {
 		const element = document.createElement(
 			"reading-item",
 		) as ReadingItemElement;
@@ -52,13 +52,13 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		container.appendChild(element);
 		await waitForUpdates(element);
 
-		// alertが呼ばれないことを確認
+		// Verify alert is not called
 		const alertSpy = vi.spyOn(window, "alert");
 		element.click();
 		expect(alertSpy).not.toHaveBeenCalled();
 	});
 
-	it("faviconのURLに悪意のあるスクリプトが含まれる場合、実行されない", async () => {
+	it("does not execute malicious script in favicon URL", async () => {
 		const maliciousItem = createMockItem({
 			id: "malicious-3",
 			title: "Test Title",
@@ -72,25 +72,25 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		container.appendChild(element);
 		await waitForUpdates(element);
 
-		// alertが呼ばれないことを確認
+		// Verify alert is not called
 		const alertSpy = vi.spyOn(window, "alert");
 		const favicon = element.shadowRoot?.querySelector(
 			".item-favicon",
 		) as HTMLImageElement;
 
-		// faviconのsrcにjavascript:が設定されても実行されない
-		// (Litやブラウザのセキュリティメカニズムで防がれる)
+		// javascript: in favicon src is not executed
+		// (prevented by Lit and browser security mechanisms)
 		if (favicon) {
-			// srcは設定されているが、実際には実行されない
+			// src is set but not actually executed
 			expect(favicon.src).toBeDefined();
-			// エラーイベントをトリガーしても alert は呼ばれない
+			// alert is not called even when error event is triggered
 			favicon.dispatchEvent(new Event("error"));
 		}
 
 		expect(alertSpy).not.toHaveBeenCalled();
 	});
 
-	it("HTMLエンティティが正しくエスケープされる", async () => {
+	it("correctly escapes HTML entities", async () => {
 		const itemWithEntities = createMockItem({
 			id: "entity-1",
 			title: "Title with &lt;brackets&gt; and &amp; symbols",
@@ -103,15 +103,15 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		container.appendChild(element);
 		await waitForUpdates(element);
 
-		// エンティティがそのまま表示されることを確認
-		// (Litは文字列を自動的にエスケープして安全に表示する)
+		// Verify entities are displayed as-is
+		// (Lit automatically escapes strings for safe display)
 		const titleElement = element.shadowRoot?.querySelector(".item-title");
 		expect(titleElement?.textContent).toBe(
 			"Title with &lt;brackets&gt; and &amp; symbols",
 		);
 	});
 
-	it("onerrorイベントハンドラが挿入されても実行されない", async () => {
+	it("does not execute injected onerror event handler", async () => {
 		const maliciousItem = createMockItem({
 			id: "malicious-4",
 			title: "Test",
@@ -125,10 +125,10 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		container.appendChild(element);
 		await waitForUpdates(element);
 
-		// alertが呼ばれないことを確認
+		// Verify alert is not called
 		const alertSpy = vi.spyOn(window, "alert");
 
-		// faviconのエラーイベントをトリガー
+		// Trigger favicon error event
 		const favicon = element.shadowRoot?.querySelector(
 			".item-favicon",
 		) as HTMLImageElement;
@@ -140,7 +140,7 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		expect(alertSpy).not.toHaveBeenCalled();
 	});
 
-	it("data-*属性に悪意のあるコードが含まれても実行されない", async () => {
+	it("does not execute malicious code in data-* attributes", async () => {
 		const element = document.createElement(
 			"reading-item",
 		) as ReadingItemElement;
@@ -149,7 +149,7 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 			title: "Test",
 		});
 
-		// 悪意のあるdata属性を設定しようとする
+		// Attempt to set malicious data attribute
 		element.setAttribute("data-onclick", "alert('XSS')");
 		element.item = maliciousItem;
 		container.appendChild(element);
@@ -160,27 +160,27 @@ describe("ReadingItemコンポーネントのXSS対策", () => {
 		expect(alertSpy).not.toHaveBeenCalled();
 	});
 
-	describe("CSP（Content Security Policy）", () => {
-		it("インラインスクリプトがCSPによってブロックされる", () => {
-			// CSPヘッダーのシミュレーション
+	describe("CSP (Content Security Policy)", () => {
+		it("blocks inline scripts with CSP", () => {
+			// Simulate CSP header
 			const meta = document.createElement("meta");
 			meta.httpEquiv = "Content-Security-Policy";
 			meta.content = "script-src 'self'; object-src 'none';";
 			document.head.appendChild(meta);
 
-			// インラインスクリプトの実行試行
+			// Attempt to execute inline script
 			const script = document.createElement("script");
 			script.textContent = "window.xssTest = true;";
 
-			// CSP違反をキャッチ
+			// Catch CSP violation
 			document.body.appendChild(script);
 
-			// window.xssTestが定義されていないことを確認
+			// Verify window.xssTest is not defined
 			expect(
 				(window as Window & { xssTest?: boolean }).xssTest,
 			).toBeUndefined();
 
-			// クリーンアップ
+			// Cleanup
 			document.head.removeChild(meta);
 			if (script.parentNode) {
 				script.parentNode.removeChild(script);
