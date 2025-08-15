@@ -340,4 +340,33 @@ describe("ReadingListPopup", () => {
 			expect(() => popup.disconnectedCallback()).not.toThrow();
 		});
 	});
+
+	describe("複数アイテム表示", () => {
+		it("0アイテムの場合「0 items」と表示される", async () => {
+			popup.storage.getItemCount = vi.fn().mockResolvedValue(0);
+			await popup.loadItems();
+			await popup.updateComplete;
+
+			const count = popup.shadowRoot?.querySelector(".item-count");
+			expect(count?.textContent?.trim()).toBe("0 items");
+		});
+
+		it("1アイテムの場合「1 item」と表示される", async () => {
+			popup.storage.getItemCount = vi.fn().mockResolvedValue(1);
+			await popup.loadItems();
+			await popup.updateComplete;
+
+			const count = popup.shadowRoot?.querySelector(".item-count");
+			expect(count?.textContent?.trim()).toBe("1 item");
+		});
+
+		it("2アイテム以上の場合「N items」と表示される", async () => {
+			popup.storage.getItemCount = vi.fn().mockResolvedValue(5);
+			await popup.loadItems();
+			await popup.updateComplete;
+
+			const count = popup.shadowRoot?.querySelector(".item-count");
+			expect(count?.textContent?.trim()).toBe("5 items");
+		});
+	});
 });

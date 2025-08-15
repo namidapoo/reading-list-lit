@@ -84,6 +84,18 @@ export class ItemList extends LitElement {
 			line-height: 1;
 		}
 
+		/* スクリーンリーダー専用のスタイル */
+		.sr-only {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
 
 		@media (prefers-color-scheme: dark) {
 			.empty-state,
@@ -119,6 +131,14 @@ export class ItemList extends LitElement {
 	private renderEmpty() {
 		return html`
 			<div class="empty-state">
+				<div 
+					role="status" 
+					aria-live="polite" 
+					aria-atomic="true"
+					class="sr-only"
+				>
+					0 items loaded
+				</div>
 				<p class="empty-text">No items</p>
 			</div>
 		`;
@@ -127,6 +147,14 @@ export class ItemList extends LitElement {
 	private renderLoading() {
 		return html`
 			<div class="loading-state">
+				<div 
+					role="status" 
+					aria-live="polite" 
+					aria-atomic="true"
+					class="sr-only"
+				>
+					Loading items...
+				</div>
 				<div class="loading-spinner"></div>
 				<div class="loading-text">Loading items...</div>
 			</div>
@@ -146,6 +174,14 @@ export class ItemList extends LitElement {
 	private renderItems() {
 		return html`
 			<div class="item-list-container">
+				<div 
+					role="status" 
+					aria-live="polite" 
+					aria-atomic="true"
+					class="sr-only"
+				>
+					${this.items.length} ${this.items.length === 1 ? "item" : "items"} loaded
+				</div>
 				${this.items.map(
 					(item) => html`
 						<reading-item 

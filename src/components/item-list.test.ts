@@ -170,4 +170,70 @@ describe("ItemList", () => {
 			expect(errorMessage).toBeTruthy();
 		});
 	});
+
+	describe("アクセシビリティ", () => {
+		it("ローディング時にスクリーンリーダー向けのライブリージョンが存在する", async () => {
+			itemList.loading = true;
+			await itemList.updateComplete;
+
+			const liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion).toBeTruthy();
+			expect(liveRegion?.getAttribute("aria-live")).toBe("polite");
+			expect(liveRegion?.getAttribute("aria-atomic")).toBe("true");
+			expect(liveRegion?.textContent?.trim()).toBe("Loading items...");
+		});
+
+		it("アイテム表示時にスクリーンリーダー向けのライブリージョンが存在する", async () => {
+			itemList.items = mockItems;
+			await itemList.updateComplete;
+
+			const liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion).toBeTruthy();
+			expect(liveRegion?.getAttribute("aria-live")).toBe("polite");
+			expect(liveRegion?.getAttribute("aria-atomic")).toBe("true");
+			expect(liveRegion?.textContent?.trim()).toBe("3 items loaded");
+		});
+
+		it("ライブリージョンにsr-onlyクラスが適用されている", async () => {
+			itemList.items = mockItems;
+			await itemList.updateComplete;
+
+			const liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion?.classList.contains("sr-only")).toBe(true);
+		});
+
+		it("単数・複数形が正しく表示される", async () => {
+			// 0件の場合（複数形）
+			itemList.items = [];
+			await itemList.updateComplete;
+			let liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion?.textContent?.trim()).toBe("0 items loaded");
+
+			// 1件の場合（単数形）
+			itemList.items = [mockItems[0]];
+			await itemList.updateComplete;
+			liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion?.textContent?.trim()).toBe("1 item loaded");
+
+			// 2件以上の場合（複数形）
+			itemList.items = [mockItems[0], mockItems[1]];
+			await itemList.updateComplete;
+			liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion?.textContent?.trim()).toBe("2 items loaded");
+		});
+
+		it("アイテム数が変更されたときライブリージョンが更新される", async () => {
+			itemList.items = [mockItems[0]];
+			await itemList.updateComplete;
+
+			let liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion?.textContent?.trim()).toBe("1 item loaded");
+
+			itemList.items = mockItems;
+			await itemList.updateComplete;
+
+			liveRegion = itemList.shadowRoot?.querySelector('[role="status"]');
+			expect(liveRegion?.textContent?.trim()).toBe("3 items loaded");
+		});
+	});
 });
