@@ -164,10 +164,13 @@ export class SearchBox extends LitElement {
 			<div class="search-container">
 				<span class="search-icon">${searchIcon()}</span>
 				<input
+					id="search-input"
+					name="search"
 					type="search"
 					.value=${this.value}
 					placeholder=${this.placeholder}
 					@input=${this.handleInput}
+					autocomplete="off"
 				/>
 				${
 					this.value
