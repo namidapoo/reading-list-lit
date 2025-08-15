@@ -1,4 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { render } from "lit";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import {
+	cleanupTestContainer,
+	createTestContainer,
+} from "../../tests/utils/helpers";
 import {
 	circlePlusIcon,
 	earthIcon,
@@ -9,102 +14,120 @@ import {
 } from "./icons";
 
 describe("Icons", () => {
+	let container: HTMLDivElement;
+
+	beforeEach(() => {
+		container = createTestContainer();
+	});
+
+	afterEach(() => {
+		cleanupTestContainer(container);
+	});
+
 	describe("circlePlusIcon", () => {
 		it("デフォルトの色でSVGテンプレートを返す", () => {
-			const result = circlePlusIcon();
-			expect(result).toBeDefined();
-			expect(result.strings).toBeDefined();
-			expect(result.values).toHaveLength(3); // fillColor once, strokeColor twice
-			expect(result.values[0]).toBe("#3EA8FF");
-			expect(result.values[1]).toBe("#fff");
-			expect(result.values[2]).toBe("#fff");
+			render(circlePlusIcon(), container);
+			const svg = container.querySelector("svg");
+			expect(svg).toBeDefined();
+
+			const circle = svg?.querySelector("circle");
+			expect(circle?.getAttribute("fill")).toBe("#3EA8FF");
+
+			const paths = svg?.querySelectorAll("path");
+			expect(paths?.[0]?.getAttribute("stroke")).toBe("#fff");
+			expect(paths?.[1]?.getAttribute("stroke")).toBe("#fff");
 		});
 
 		it("カスタム色を適用できる", () => {
-			const result = circlePlusIcon("#FF0000", "#00FF00");
-			expect(result.values[0]).toBe("#FF0000");
-			expect(result.values[1]).toBe("#00FF00");
-			expect(result.values[2]).toBe("#00FF00");
+			render(circlePlusIcon("#FF0000", "#00FF00"), container);
+			const svg = container.querySelector("svg");
+
+			const circle = svg?.querySelector("circle");
+			expect(circle?.getAttribute("fill")).toBe("#FF0000");
+
+			const paths = svg?.querySelectorAll("path");
+			expect(paths?.[0]?.getAttribute("stroke")).toBe("#00FF00");
+			expect(paths?.[1]?.getAttribute("stroke")).toBe("#00FF00");
 		});
 	});
 
 	describe("earthIcon", () => {
 		it("デフォルトの色でSVGテンプレートを返す", () => {
-			const result = earthIcon();
-			expect(result).toBeDefined();
-			expect(result.strings).toBeDefined();
-			expect(result.values).toHaveLength(1);
-			expect(result.values[0]).toBe("currentColor");
+			render(earthIcon(), container);
+			const svg = container.querySelector("svg");
+			expect(svg).toBeDefined();
+			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
 		it("カスタム色を適用できる", () => {
-			const result = earthIcon("#FF0000");
-			expect(result.values[0]).toBe("#FF0000");
+			render(earthIcon("#FF0000"), container);
+			const svg = container.querySelector("svg");
+			expect(svg?.getAttribute("stroke")).toBe("#FF0000");
 		});
 	});
 
 	describe("octagonAlertIcon", () => {
 		it("デフォルトの色でSVGテンプレートを返す", () => {
-			const result = octagonAlertIcon();
-			expect(result).toBeDefined();
-			expect(result.strings).toBeDefined();
-			expect(result.values).toHaveLength(1);
-			expect(result.values[0]).toBe("currentColor");
+			render(octagonAlertIcon(), container);
+			const svg = container.querySelector("svg");
+			expect(svg).toBeDefined();
+			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
 		it("カスタム色を適用できる", () => {
-			const result = octagonAlertIcon("#00FF00");
-			expect(result.values[0]).toBe("#00FF00");
+			render(octagonAlertIcon("#00FF00"), container);
+			const svg = container.querySelector("svg");
+			expect(svg?.getAttribute("stroke")).toBe("#00FF00");
 		});
 	});
 
 	describe("searchIcon", () => {
 		it("デフォルトの色でSVGテンプレートを返す", () => {
-			const result = searchIcon();
-			expect(result).toBeDefined();
-			expect(result.strings).toBeDefined();
-			expect(result.values).toHaveLength(1);
-			expect(result.values[0]).toBe("currentColor");
+			render(searchIcon(), container);
+			const svg = container.querySelector("svg");
+			expect(svg).toBeDefined();
+			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
 		it("カスタム色を適用できる", () => {
-			const result = searchIcon("#0000FF");
-			expect(result.values[0]).toBe("#0000FF");
+			render(searchIcon("#0000FF"), container);
+			const svg = container.querySelector("svg");
+			expect(svg?.getAttribute("stroke")).toBe("#0000FF");
 		});
 	});
 
 	describe("trashIcon", () => {
 		it("デフォルトの色でSVGテンプレートを返す", () => {
-			const result = trashIcon();
-			expect(result).toBeDefined();
-			expect(result.strings).toBeDefined();
-			expect(result.values).toHaveLength(1);
-			expect(result.values[0]).toBe("currentColor");
+			render(trashIcon(), container);
+			const svg = container.querySelector("svg");
+			expect(svg).toBeDefined();
+			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
 		it("カスタム色を適用できる", () => {
-			const result = trashIcon("#FF00FF");
-			expect(result.values[0]).toBe("#FF00FF");
+			render(trashIcon("#FF00FF"), container);
+			const svg = container.querySelector("svg");
+			expect(svg?.getAttribute("stroke")).toBe("#FF00FF");
 		});
 	});
 
 	describe("xIcon", () => {
 		it("デフォルトの色でSVGテンプレートを返す", () => {
-			const result = xIcon();
-			expect(result).toBeDefined();
-			expect(result.strings).toBeDefined();
-			expect(result.values).toHaveLength(1);
-			expect(result.values[0]).toBe("currentColor");
+			render(xIcon(), container);
+			const svg = container.querySelector("svg");
+			expect(svg).toBeDefined();
+			expect(svg?.getAttribute("stroke")).toBe("currentColor");
 		});
 
 		it("カスタム色を適用できる", () => {
-			const result = xIcon("#00FFFF");
-			expect(result.values[0]).toBe("#00FFFF");
+			render(xIcon("#00FFFF"), container);
+			const svg = container.querySelector("svg");
+			expect(svg?.getAttribute("stroke")).toBe("#00FFFF");
 		});
 	});
 
 	describe("全アイコン共通", () => {
-		it("すべてのアイコンがSVGテンプレートを返す", () => {
+		it("すべてのアイコンがSVG要素を描画する", () => {
 			const icons = [
 				circlePlusIcon(),
 				earthIcon(),
@@ -115,9 +138,11 @@ describe("Icons", () => {
 			];
 
 			for (const icon of icons) {
-				expect(icon).toBeDefined();
-				expect(icon.strings).toBeDefined();
-				expect(icon.strings.length).toBeGreaterThan(0);
+				const tempContainer = document.createElement("div");
+				render(icon, tempContainer);
+				const svg = tempContainer.querySelector("svg");
+				expect(svg).toBeDefined();
+				expect(svg?.tagName).toBe("svg");
 			}
 		});
 
@@ -132,8 +157,10 @@ describe("Icons", () => {
 			];
 
 			for (const icon of icons) {
-				const svg = icon.strings.join("");
-				expect(svg).toContain('aria-hidden="true"');
+				const tempContainer = document.createElement("div");
+				render(icon, tempContainer);
+				const svg = tempContainer.querySelector("svg");
+				expect(svg?.getAttribute("aria-hidden")).toBe("true");
 			}
 		});
 	});

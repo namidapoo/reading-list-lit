@@ -1,23 +1,34 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./search-box";
+import { searchQueries } from "../../tests/utils/fixtures";
+import {
+	cleanupTestContainer,
+	createTestContainer,
+	waitForDebounce,
+	waitForUpdates,
+} from "../../tests/utils/helpers";
 import type { SearchBox } from "./search-box";
 
 describe("SearchBox", () => {
-	let container: HTMLElement;
+	let container: HTMLDivElement;
 	let searchBox: SearchBox;
 
 	beforeEach(async () => {
 		// コンテナをクリーンアップ
 		document.body.innerHTML = "";
-		container = document.createElement("div");
-		document.body.appendChild(container);
+		container = createTestContainer();
 
 		// SearchBoxコンポーネントを作成
 		searchBox = document.createElement("search-box") as SearchBox;
 		container.appendChild(searchBox);
 
 		// コンポーネントの更新を待つ
-		await searchBox.updateComplete;
+		await waitForUpdates(searchBox);
+	});
+
+	afterEach(() => {
+		cleanupTestContainer(container);
+		vi.clearAllMocks();
 	});
 
 	describe("レンダリング", () => {
@@ -76,8 +87,8 @@ describe("SearchBox", () => {
 			searchBox.value = "programmatic change";
 			await searchBox.updateComplete;
 
-			// デバウンス時間を待つ
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			// デバウンス時間を待つ（プログラム的変更はイベントを発火しない）
+			await waitForDebounce();
 
 			expect(listener).not.toHaveBeenCalled();
 		});
@@ -95,15 +106,15 @@ describe("SearchBox", () => {
 			input.value = "search query";
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 
-			// デバウンス時間（100ms）を待つ
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			expect(listener).toHaveBeenCalledTimes(1);
-			expect(listener).toHaveBeenCalledWith(
-				expect.objectContaining({
-					detail: { value: "search query" },
-				}),
-			);
+			// デバウンス完了を待つ
+			await vi.waitFor(() => {
+				expect(listener).toHaveBeenCalledTimes(1);
+				expect(listener).toHaveBeenCalledWith(
+					expect.objectContaining({
+						detail: { value: "search query" },
+					}),
+				);
+			});
 		});
 
 		it("連続入力時はデバウンスされる", async () => {
@@ -129,7 +140,7 @@ describe("SearchBox", () => {
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 
 			// デバウンス時間を待つ
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitForDebounce();
 
 			// 最後の値のみでイベントが1回だけ発火する
 			expect(listener).toHaveBeenCalledTimes(1);
@@ -157,7 +168,7 @@ describe("SearchBox", () => {
 			}
 
 			// デバウンス時間を待つ
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitForDebounce();
 
 			// 最後の値のみでイベントが発火
 			expect(listener).toHaveBeenCalledTimes(1);
@@ -203,7 +214,7 @@ describe("SearchBox", () => {
 			await searchBox.updateComplete;
 
 			// デバウンス時間を待つ
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitForDebounce();
 
 			expect(searchBox.value).toBe("");
 			expect(listener).toHaveBeenCalledWith(
@@ -211,6 +222,136 @@ describe("SearchBox", () => {
 					detail: { value: "" },
 				}),
 			);
+		});
+	});
+
+	describe("エッジケース", () => {
+		it("RegExp特殊文字を含む検索文字列を安全に処理する", async () => {
+			const listener = vi.fn();
+			searchBox.addEventListener("search-changed", listener);
+
+			const specialChars = searchQueries.regexSpecial;
+
+			for (const query of specialChars) {
+				const input = searchBox.shadowRoot?.querySelector(
+					"input",
+				) as HTMLInputElement;
+
+				// 入力値を設定
+				input.value = query;
+				input.dispatchEvent(new Event("input"));
+				await searchBox.updateComplete;
+
+				// デバウンス時間を待つ
+				await new Promise((resolve) => setTimeout(resolve, 150));
+
+				// イベントが発火し、特殊文字がそのまま渡されることを確認
+				expect(listener).toHaveBeenCalledWith(
+					expect.objectContaining({
+						detail: { value: query },
+					}),
+				);
+
+				// クリア
+				listener.mockClear();
+			}
+		});
+
+		it("非常に長い検索文字列（1000文字）を処理できる", async () => {
+			const listener = vi.fn();
+			searchBox.addEventListener("search-changed", listener);
+
+			const longQuery = "a".repeat(1000);
+			const input = searchBox.shadowRoot?.querySelector(
+				"input",
+			) as HTMLInputElement;
+
+			input.value = longQuery;
+			input.dispatchEvent(new Event("input"));
+			await searchBox.updateComplete;
+
+			// デバウンス時間を待つ
+			await waitForDebounce();
+
+			expect(listener).toHaveBeenCalledWith(
+				expect.objectContaining({
+					detail: { value: longQuery },
+				}),
+			);
+		});
+
+		it("日本語入力（IME）中でもイベントは発火する", async () => {
+			const listener = vi.fn();
+			searchBox.addEventListener("search-changed", listener);
+
+			const input = searchBox.shadowRoot?.querySelector(
+				"input",
+			) as HTMLInputElement;
+
+			// IME入力開始（compositionstart）
+			input.dispatchEvent(new CompositionEvent("compositionstart"));
+
+			// IME入力中の文字入力
+			input.value = "にほんご";
+			input.dispatchEvent(new Event("input"));
+			await searchBox.updateComplete;
+
+			// デバウンス時間を待つ
+			await waitForDebounce();
+
+			// IME入力中でもイベントは発火する（コンポーネントがIME制御を実装していないため）
+			expect(listener).toHaveBeenCalledWith(
+				expect.objectContaining({
+					detail: { value: "にほんご" },
+				}),
+			);
+
+			// IME確定（compositionend）
+			input.dispatchEvent(new CompositionEvent("compositionend"));
+		});
+
+		it("絵文字を含む検索文字列を処理できる", async () => {
+			const listener = vi.fn();
+			searchBox.addEventListener("search-changed", listener);
+
+			const emojiQuery = "検索 🔍 テスト 🎉";
+			const input = searchBox.shadowRoot?.querySelector(
+				"input",
+			) as HTMLInputElement;
+
+			input.value = emojiQuery;
+			input.dispatchEvent(new Event("input"));
+			await searchBox.updateComplete;
+
+			// デバウンス時間を待つ
+			await waitForDebounce();
+
+			expect(listener).toHaveBeenCalledWith(
+				expect.objectContaining({
+					detail: { value: emojiQuery },
+				}),
+			);
+		});
+
+		it("空白文字のみの検索でも正しく処理する", async () => {
+			const listener = vi.fn();
+			searchBox.addEventListener("search-changed", listener);
+
+			const query = "   ";
+			const input = searchBox.shadowRoot?.querySelector(
+				"input",
+			) as HTMLInputElement;
+
+			input.value = query;
+			input.dispatchEvent(new Event("input"));
+			await searchBox.updateComplete;
+
+			// デバウンス時間を待つ
+			await waitForDebounce();
+
+			expect(listener).toHaveBeenCalledTimes(1);
+			const calledEvent = listener.mock.calls[0][0] as CustomEvent;
+			expect(calledEvent.detail.value).toBe(query);
 		});
 	});
 });

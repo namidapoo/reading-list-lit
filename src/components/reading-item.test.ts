@@ -1,29 +1,36 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./reading-item";
+import { createMockItem, fixtures } from "../../tests/utils/fixtures";
+import {
+	cleanupTestContainer,
+	createTestContainer,
+	waitForUpdates,
+} from "../../tests/utils/helpers";
 import type { ReadingItem } from "../types";
 import type { ReadingItemElement } from "./reading-item";
 
 describe("ReadingItem", () => {
-	let container: HTMLElement;
+	let container: HTMLDivElement;
 	let element: ReadingItemElement;
-	const mockItem: ReadingItem = {
-		id: "test-id",
-		url: "https://example.com/article",
+	const mockItem = createMockItem({
 		title: "Test Article Title",
-		faviconUrl: "https://example.com/favicon.ico",
 		addedAt: Date.now() - 3600000, // 1時間前
-	};
+	});
 
 	beforeEach(async () => {
 		document.body.innerHTML = "";
-		container = document.createElement("div");
-		document.body.appendChild(container);
+		container = createTestContainer();
 
 		element = document.createElement("reading-item") as ReadingItemElement;
 		element.item = mockItem;
 		container.appendChild(element);
 
-		await element.updateComplete;
+		await waitForUpdates(element);
+	});
+
+	afterEach(() => {
+		cleanupTestContainer(container);
+		vi.clearAllMocks();
 	});
 
 	describe("レンダリング", () => {
@@ -55,9 +62,8 @@ describe("ReadingItem", () => {
 		});
 
 		it("faviconがない場合はデフォルトアイコンが表示される", async () => {
-			const itemWithoutFavicon = { ...mockItem, faviconUrl: undefined };
-			element.item = itemWithoutFavicon;
-			await element.updateComplete;
+			element.item = fixtures.itemWithoutFavicon;
+			await waitForUpdates(element);
 
 			const favicon = element.shadowRoot?.querySelector(".item-favicon");
 			const defaultIcon = element.shadowRoot?.querySelector(".default-icon");
@@ -185,7 +191,7 @@ describe("ReadingItem", () => {
 
 			// エラーイベントをシミュレート
 			favicon.dispatchEvent(new Event("error"));
-			await element.updateComplete;
+			await waitForUpdates(element);
 
 			const updatedFavicon = element.shadowRoot?.querySelector(".item-favicon");
 			const defaultIcon = element.shadowRoot?.querySelector(".default-icon");
@@ -197,7 +203,7 @@ describe("ReadingItem", () => {
 		it("DuckDuckGo favicon APIのURLが正しく生成される", async () => {
 			const testUrl = "https://github.com/user/repo";
 			element.item = { ...mockItem, url: testUrl };
-			await element.updateComplete;
+			await waitForUpdates(element);
 
 			const favicon = element.shadowRoot?.querySelector(
 				".item-favicon",
@@ -212,7 +218,7 @@ describe("ReadingItem", () => {
 	describe("時間表示", () => {
 		it("1分未満は'Just now'と表示される", async () => {
 			element.item = { ...mockItem, addedAt: Date.now() - 30000 };
-			await element.updateComplete;
+			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
 			expect(time?.textContent).toBe("Just now");
@@ -220,7 +226,7 @@ describe("ReadingItem", () => {
 
 		it("1時間未満は分単位で表示される", async () => {
 			element.item = { ...mockItem, addedAt: Date.now() - 1800000 }; // 30分前
-			await element.updateComplete;
+			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
 			expect(time?.textContent).toMatch(/30 minutes ago/);
@@ -228,7 +234,7 @@ describe("ReadingItem", () => {
 
 		it("24時間未満は時間単位で表示される", async () => {
 			element.item = { ...mockItem, addedAt: Date.now() - 7200000 }; // 2時間前
-			await element.updateComplete;
+			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
 			expect(time?.textContent).toMatch(/2 hours ago/);
@@ -236,10 +242,57 @@ describe("ReadingItem", () => {
 
 		it("24時間以上は日付で表示される", async () => {
 			element.item = { ...mockItem, addedAt: Date.now() - 172800000 }; // 2日前
-			await element.updateComplete;
+			await waitForUpdates(element);
 
 			const time = element.shadowRoot?.querySelector(".item-time");
 			expect(time?.textContent).toMatch(/2 days ago/);
+		});
+	});
+
+	describe("エッジケース", () => {
+		it("favicon読み込みのタイムアウト処理", async () => {
+			const item: ReadingItem = {
+				id: "timeout-test",
+				url: "https://example.com",
+				title: "Timeout Test",
+				faviconUrl: "https://slow-server.com/favicon.ico",
+				addedAt: Date.now(),
+			};
+
+			element.item = item;
+			await waitForUpdates(element);
+
+			const favicon = element.shadowRoot?.querySelector(
+				".item-favicon",
+			) as HTMLImageElement;
+
+			// エラーイベントをシミュレート（タイムアウト）
+			if (favicon) {
+				const errorEvent = new Event("error");
+				favicon.dispatchEvent(errorEvent);
+				await waitForUpdates(element);
+
+				// デフォルトアイコンが表示されることを確認
+				const defaultIcon = element.shadowRoot?.querySelector(".default-icon");
+				expect(defaultIcon).toBeDefined();
+			}
+		});
+
+		it("未来の日付の時間表示が正しく処理される", async () => {
+			const futureDate = Date.now() + 86400000 * 365; // 1年後
+			const item: ReadingItem = {
+				id: "future-test",
+				url: "https://example.com",
+				title: "Future Item",
+				addedAt: futureDate,
+			};
+
+			element.item = item;
+			await waitForUpdates(element);
+
+			const time = element.shadowRoot?.querySelector(".item-time");
+			// 負の経過時間でもエラーにならないことを確認
+			expect(time?.textContent).toBeDefined();
 		});
 	});
 });

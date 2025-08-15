@@ -1,25 +1,34 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "./error-message";
+import {
+	cleanupTestContainer,
+	createTestContainer,
+	waitForUpdates,
+} from "../../tests/utils/helpers";
 import type { ErrorMessage } from "./error-message";
 
 describe("ErrorMessage", () => {
-	let container: HTMLElement;
+	let container: HTMLDivElement;
 	let errorMessage: ErrorMessage;
 
 	beforeEach(async () => {
 		document.body.innerHTML = "";
-		container = document.createElement("div");
-		document.body.appendChild(container);
+		container = createTestContainer();
 
 		errorMessage = document.createElement("error-message") as ErrorMessage;
 		container.appendChild(errorMessage);
-		await errorMessage.updateComplete;
+		await waitForUpdates(errorMessage);
+	});
+
+	afterEach(() => {
+		cleanupTestContainer(container);
+		vi.clearAllMocks();
 	});
 
 	describe("エラー表示", () => {
 		it("エラーメッセージが表示される", async () => {
 			errorMessage.message = "テストエラーメッセージ";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const messageDiv = errorMessage.shadowRoot?.querySelector(".message");
 			expect(messageDiv?.textContent).toBe("テストエラーメッセージ");
@@ -27,7 +36,7 @@ describe("ErrorMessage", () => {
 
 		it("エラーメッセージが空の場合は何も表示されない", async () => {
 			errorMessage.message = "";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const container =
 				errorMessage.shadowRoot?.querySelector(".error-container");
@@ -38,7 +47,7 @@ describe("ErrorMessage", () => {
 			// 通常のエラー
 			errorMessage.message = "通常のエラー";
 			errorMessage.type = "error";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			let container =
 				errorMessage.shadowRoot?.querySelector(".error-container");
@@ -46,14 +55,14 @@ describe("ErrorMessage", () => {
 
 			// 警告
 			errorMessage.type = "warning";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			container = errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container?.classList.contains("warning")).toBe(true);
 
 			// 情報
 			errorMessage.type = "info";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			container = errorMessage.shadowRoot?.querySelector(".error-container");
 			expect(container?.classList.contains("info")).toBe(true);
@@ -62,7 +71,7 @@ describe("ErrorMessage", () => {
 		it("アイコンが表示される", async () => {
 			errorMessage.message = "エラー";
 			errorMessage.type = "error";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const icon = errorMessage.shadowRoot?.querySelector(".icon");
 			expect(icon).toBeTruthy();
@@ -76,7 +85,7 @@ describe("ErrorMessage", () => {
 			errorMessage.message = "自動非表示テスト";
 			errorMessage.autoHide = true;
 			errorMessage.autoHideDelay = 3000;
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			// 初期状態では表示されている
 			let container =
@@ -85,7 +94,7 @@ describe("ErrorMessage", () => {
 
 			// 3秒経過
 			vi.advanceTimersByTime(3000);
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			// 非表示になっている
 			container = errorMessage.shadowRoot?.querySelector(".error-container");
@@ -99,11 +108,11 @@ describe("ErrorMessage", () => {
 
 			errorMessage.message = "永続表示テスト";
 			errorMessage.autoHide = false;
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			// 5秒経過
 			vi.advanceTimersByTime(5000);
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			// まだ表示されている
 			const container =
@@ -119,7 +128,7 @@ describe("ErrorMessage", () => {
 		it("閉じるボタンをクリックすると非表示になる", async () => {
 			errorMessage.message = "閉じるボタンテスト";
 			errorMessage.showCloseButton = true;
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const closeButton = errorMessage.shadowRoot?.querySelector(
 				".close-button",
@@ -128,7 +137,7 @@ describe("ErrorMessage", () => {
 
 			// クリック
 			closeButton.click();
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			// 非表示になっている
 			const container =
@@ -139,7 +148,7 @@ describe("ErrorMessage", () => {
 		it("showCloseButtonがfalseの場合は閉じるボタンが表示されない", async () => {
 			errorMessage.message = "閉じるボタンなし";
 			errorMessage.showCloseButton = false;
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const closeButton =
 				errorMessage.shadowRoot?.querySelector(".close-button");
@@ -154,7 +163,7 @@ describe("ErrorMessage", () => {
 
 			errorMessage.message = "イベントテスト";
 			errorMessage.showCloseButton = true;
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const closeButton = errorMessage.shadowRoot?.querySelector(
 				".close-button",
@@ -169,7 +178,7 @@ describe("ErrorMessage", () => {
 			errorMessage.addEventListener("error-shown", listener);
 
 			errorMessage.message = "新しいエラー";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			expect(listener).toHaveBeenCalled();
 		});
@@ -179,7 +188,7 @@ describe("ErrorMessage", () => {
 		it("ストレージ容量超過エラーの場合、特別なメッセージが表示される", async () => {
 			errorMessage.message = "Storage limit reached";
 			errorMessage.type = "error";
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const messageDiv = errorMessage.shadowRoot?.querySelector(".message");
 			expect(messageDiv?.textContent).toContain("Storage limit reached");
@@ -194,7 +203,7 @@ describe("ErrorMessage", () => {
 			errorMessage.message = "Network error";
 			errorMessage.type = "error";
 			errorMessage.showRetryButton = true;
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const retryButton = errorMessage.shadowRoot?.querySelector(
 				".retry-button",
@@ -209,7 +218,7 @@ describe("ErrorMessage", () => {
 
 			errorMessage.message = "Network error";
 			errorMessage.showRetryButton = true;
-			await errorMessage.updateComplete;
+			await waitForUpdates(errorMessage);
 
 			const retryButton = errorMessage.shadowRoot?.querySelector(
 				".retry-button",

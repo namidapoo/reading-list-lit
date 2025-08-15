@@ -1,46 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ReadingListStorage } from "./lib/storage";
-import type { ReadingItem } from "./types";
+import { ReadingListStorage } from "../../src/lib/storage";
+import type { ReadingItem } from "../../src/types";
+import { createFullChromeMock, setupGlobalChrome } from "../utils/helpers";
 
 // Chrome APIのモック
-const mockChrome = {
-	storage: {
-		sync: {
-			get: vi.fn(),
-			set: vi.fn(),
-			remove: vi.fn(),
-			onChanged: {
-				addListener: vi.fn(),
-				removeListener: vi.fn(),
-			},
-		},
-	},
-	tabs: {
-		query: vi.fn(),
-		create: vi.fn(),
-		update: vi.fn(),
-	},
-	contextMenus: {
-		create: vi.fn(),
-		onClicked: {
-			addListener: vi.fn(),
-		},
-	},
-	runtime: {
-		onInstalled: {
-			addListener: vi.fn(),
-		},
-		onMessage: {
-			addListener: vi.fn(),
-		},
-	},
-	action: {
-		setBadgeText: vi.fn(),
-		setBadgeBackgroundColor: vi.fn(),
-	},
-};
-
-Object.assign(globalThis, { chrome: mockChrome });
+const mockChrome = createFullChromeMock();
+setupGlobalChrome(mockChrome);
 
 describe("統合テスト", () => {
 	let storage: ReadingListStorage;

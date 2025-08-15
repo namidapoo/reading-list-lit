@@ -1,9 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "../components/search-box";
 import "../components/item-list";
 import type { ItemList } from "../components/item-list";
 import "./app";
-import type { ReadingItem } from "../types";
+import { createMockItems } from "../../tests/utils/fixtures";
+import {
+	cleanupTestContainer,
+	createTestContainer,
+	waitForUpdates,
+} from "../../tests/utils/helpers";
 import type { ReadingListPopup } from "./app";
 
 // モックStorageクラス
@@ -40,36 +45,26 @@ const mockChrome = {
 Object.assign(globalThis, { chrome: mockChrome });
 
 describe("ReadingListPopup", () => {
-	let container: HTMLElement;
+	let container: HTMLDivElement;
 	let popup: ReadingListPopup;
 
-	const mockItems: ReadingItem[] = [
-		{
-			id: "1",
-			url: "https://example.com/1",
-			title: "First Article",
-			faviconUrl: "https://example.com/favicon1.ico",
-			addedAt: Date.now() - 1000,
-		},
-		{
-			id: "2",
-			url: "https://example.com/2",
-			title: "Second Article",
-			faviconUrl: "https://example.com/favicon2.ico",
-			addedAt: Date.now() - 2000,
-		},
-	];
+	const mockItems = createMockItems(2, {
+		faviconUrl: "https://example.com/favicon.ico",
+	});
 
 	beforeEach(async () => {
 		document.body.innerHTML = "";
-		container = document.createElement("div");
-		document.body.appendChild(container);
+		container = createTestContainer();
 
 		popup = document.createElement("reading-list-popup") as ReadingListPopup;
 		container.appendChild(popup);
 
-		await popup.updateComplete;
+		await waitForUpdates(popup);
 		vi.clearAllMocks();
+	});
+
+	afterEach(() => {
+		cleanupTestContainer(container);
 	});
 
 	describe("ヘッダー表示", () => {
@@ -144,9 +139,13 @@ describe("ReadingListPopup", () => {
 			) as HTMLButtonElement;
 			addButton.click();
 
-			await new Promise((resolve) => setTimeout(resolve, 100));
-
-			expect(popup.storage.addItem).not.toHaveBeenCalled();
+			await vi.waitFor(
+				() => {
+					// addItemが呼ばれていないことを確認
+					expect(popup.storage.addItem).not.toHaveBeenCalled();
+				},
+				{ timeout: 150 },
+			);
 		});
 
 		it("追加中はローディング状態を表示する", async () => {
@@ -336,8 +335,30 @@ describe("ReadingListPopup", () => {
 
 	describe("ストレージ変更リスナー", () => {
 		it("disconnectedCallbackでリスナーが削除される", () => {
-			// disconnectedCallbackは何も返さないことを確認
-			expect(() => popup.disconnectedCallback()).not.toThrow();
+			// chrome.storage.sync.onChanged.addListenerのモックを作成
+			const addListenerSpy = vi.fn();
+			mockChrome.storage.sync.onChanged.addListener = addListenerSpy;
+
+			// chrome.storage.sync.onChanged.removeListenerのモックを作成
+			const removeListenerSpy = vi.fn();
+			mockChrome.storage.sync.onChanged.removeListener = removeListenerSpy;
+
+			// 新しいポップアップインスタンスを作成（connectedCallbackが呼ばれる）
+			const testPopup = document.createElement(
+				"reading-list-popup",
+			) as ReadingListPopup;
+			container.appendChild(testPopup);
+
+			// リスナーが追加されたことを確認
+			expect(addListenerSpy).toHaveBeenCalled();
+			const addedListener = addListenerSpy.mock.calls[0][0];
+			expect(addedListener).toBeDefined();
+
+			// disconnectedCallbackを呼ぶ
+			testPopup.disconnectedCallback();
+
+			// リスナーが削除されたことを確認
+			expect(removeListenerSpy).toHaveBeenCalledWith(addedListener);
 		});
 	});
 
