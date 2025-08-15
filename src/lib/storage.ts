@@ -5,6 +5,11 @@ const STORAGE_KEY = "items";
 const MAX_ITEMS = 512;
 const MAX_TITLE_LENGTH = 255;
 
+// Chrome Storage APIの型定義を強化
+interface StorageData {
+	[STORAGE_KEY]: ReadingItem[];
+}
+
 export class ReadingListStorage {
 	private cache: ReadingItem[] | null = null;
 	private storageListener?: (changes: {
@@ -22,53 +27,66 @@ export class ReadingListStorage {
 	}
 
 	async addItem(url: string, title: string): Promise<ReadingItem> {
-		// URL検証
-		if (!this.isValidUrl(url)) {
-			throw new ReadingListError(ErrorCode.INVALID_URL, "Invalid URL");
-		}
+		try {
+			// URL検証
+			if (!this.isValidUrl(url)) {
+				throw new ReadingListError(ErrorCode.INVALID_URL, "Invalid URL");
+			}
 
-		// タイトルのサニタイズと切り詰め
-		const sanitizedTitle = this.sanitizeTitle(title);
+			// タイトルのサニタイズと切り詰め
+			const sanitizedTitle = this.sanitizeTitle(title);
 
-		// ソートされていない元のデータを取得
-		const result = await chrome.storage.sync.get(STORAGE_KEY);
-		const items: ReadingItem[] = result[STORAGE_KEY] || [];
+			// ソートされていない元のデータを取得
+			const result = await chrome.storage.sync.get<StorageData>([STORAGE_KEY]);
+			const items: ReadingItem[] = result[STORAGE_KEY] || [];
 
-		// 既存のアイテムをチェック（重複URL）
-		const existingItemIndex = items.findIndex((item) => item.url === url);
+			// 既存のアイテムをチェック（重複URL）
+			const existingItemIndex = items.findIndex((item) => item.url === url);
 
-		if (existingItemIndex !== -1) {
-			// 重複URLの場合は更新
-			items[existingItemIndex] = {
-				...items[existingItemIndex],
+			if (existingItemIndex !== -1) {
+				// 重複URLの場合は更新
+				items[existingItemIndex] = {
+					...items[existingItemIndex],
+					title: sanitizedTitle,
+					addedAt: Date.now(),
+				};
+				await this.saveItems(items);
+				return items[existingItemIndex];
+			}
+
+			// ストレージ制限チェック
+			if (items.length >= MAX_ITEMS) {
+				throw new ReadingListError(
+					ErrorCode.STORAGE_FULL,
+					"Storage limit reached",
+				);
+			}
+
+			// 新規アイテム作成
+			const newItem: ReadingItem = {
+				id: this.generateId(),
+				url,
 				title: sanitizedTitle,
+				faviconUrl: this.getFaviconUrl(url),
 				addedAt: Date.now(),
 			};
+
+			items.push(newItem);
 			await this.saveItems(items);
-			return items[existingItemIndex];
+
+			return newItem;
+		} catch (error) {
+			// ストレージクォータエラーの詳細な処理
+			if (error instanceof Error && error.name === "QuotaExceededError") {
+				const usage = await chrome.storage.sync.getBytesInUse();
+				const quota = chrome.storage.sync.QUOTA_BYTES;
+				throw new ReadingListError(
+					ErrorCode.STORAGE_FULL,
+					`Storage limit reached: ${usage}/${quota} bytes used`,
+				);
+			}
+			throw error;
 		}
-
-		// ストレージ制限チェック
-		if (items.length >= MAX_ITEMS) {
-			throw new ReadingListError(
-				ErrorCode.STORAGE_FULL,
-				"Storage limit reached",
-			);
-		}
-
-		// 新規アイテム作成
-		const newItem: ReadingItem = {
-			id: this.generateId(),
-			url,
-			title: sanitizedTitle,
-			faviconUrl: this.getFaviconUrl(url),
-			addedAt: Date.now(),
-		};
-
-		items.push(newItem);
-		await this.saveItems(items);
-
-		return newItem;
 	}
 
 	async removeItem(id: string): Promise<void> {
@@ -83,8 +101,8 @@ export class ReadingListStorage {
 		}
 
 		try {
-			const result = await chrome.storage.sync.get(STORAGE_KEY);
-			const items = result[STORAGE_KEY] || [];
+			const result = await chrome.storage.sync.get<StorageData>([STORAGE_KEY]);
+			const items: ReadingItem[] = result[STORAGE_KEY] || [];
 			this.cache = items;
 			return this.sortByAddedAt(items);
 		} catch (error) {
@@ -117,7 +135,8 @@ export class ReadingListStorage {
 
 	private async saveItems(items: ReadingItem[]): Promise<void> {
 		try {
-			await chrome.storage.sync.set({ [STORAGE_KEY]: items });
+			const data: StorageData = { [STORAGE_KEY]: items };
+			await chrome.storage.sync.set(data);
 			this.cache = items;
 		} catch (error) {
 			console.error("Failed to save items to storage:", error);
