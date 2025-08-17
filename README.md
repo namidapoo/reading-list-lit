@@ -4,7 +4,11 @@ English | [Japanese](./README.ja.md)
 
 A Chrome extension for saving articles and web pages to read later, built with Lit Web Components and TypeScript.
 
-![Reading List extension screenshot](https://storage.googleapis.com/zenn-user-upload/5810ad5de647-20250815.png)
+![Reading List extension screenshot](https://storage.googleapis.com/zenn-user-upload/ac1a4d816e65-20250817.png)
+
+## Installation from Chrome Web Store
+
+[Install from Chrome Web Store](https://chromewebstore.google.com/detail/reading-list/occnlljonbmoefnghjmckdimncgcbfmh)
 
 ## Features
 
@@ -57,7 +61,7 @@ bun run build
 
 The built extension will be in the `dist/` directory.
 
-## Loading in Chrome
+## Loading in Chrome (for development)
 
 1. Open Chrome and go to `chrome://extensions/`
 2. Enable "Developer mode"

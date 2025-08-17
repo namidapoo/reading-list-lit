@@ -4,7 +4,11 @@
 
 記事やウェブページを後で読むために保存するChrome拡張機能。Lit Web ComponentsとTypeScriptで構築されています。
 
-![Reading List extension screenshot](https://storage.googleapis.com/zenn-user-upload/5810ad5de647-20250815.png)
+![Reading List extension screenshot](https://storage.googleapis.com/zenn-user-upload/ac1a4d816e65-20250817.png)
+
+## Chrome Web Storeからインストール
+
+[Chrome Web Storeからインストール](https://chromewebstore.google.com/detail/reading-list/occnlljonbmoefnghjmckdimncgcbfmh)
 
 ## 機能
 
@@ -57,7 +61,7 @@ bun run build
 
 ビルドされた拡張機能は `dist/` ディレクトリに出力されます。
 
-## Chromeへの読み込み
+## Chromeへの読み込み（開発用）
 
 1. Chromeを開き `chrome://extensions/` にアクセス
 2. 「デベロッパーモード」を有効化
